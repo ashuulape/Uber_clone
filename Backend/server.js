@@ -3,9 +3,11 @@ const app=require('./app')
 const express=require('express')
 const http=require('http')
 const dotenv=require('dotenv')
+const connectDB=require('./Databse/db.js')
 
 dotenv.config();
 
+connectDB();
 
 const server=http.createServer(app);
 
