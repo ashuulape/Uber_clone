@@ -9,6 +9,7 @@ This is the backend service for the Uber Clone application. It provides the REST
 - **MongoDB** (with Mongoose)
 - **JWT** (for Authentication)
 - **Bcrypt** (for Password Hashing)
+- **Cookie Parser** (for securely handling JWT in cookies)
 
 ## Prerequisites
 
@@ -48,9 +49,18 @@ npm start
 
 The server will run on `http://localhost:3000` (or the port specified in your `.env` file).
 
+## API Endpoints
+
+### Auth Routes (`/api/auth`)
+- `POST /register`: Register a new user.
+- `POST /login`: Login a user, generates a JWT, and sets it in an HTTP-only cookie.
+- `GET /profile`: Get the authenticated user's profile (Requires valid JWT token).
+- `POST /logout`: Logout the user by blacklisting their token and clearing the cookie.
+
 ## Project Structure
 
-- `models/`: Mongoose schemas (e.g., User Model)
-- `Controlers/`: Route controllers handling the business logic
-- `Routes/`: Express routes (e.g., Auth Routes)
-- `Databse/`: Database connection logic
+- `src/models/`: Mongoose schemas (e.g., User Model, Blacklist Model)
+- `src/Controlers/`: Route controllers handling the business logic
+- `src/Routes/`: Express API routes
+- `src/middlewares/`: Custom middlewares (e.g., Authentication and Token validation)
+- `src/Databse/`: Database connection setup

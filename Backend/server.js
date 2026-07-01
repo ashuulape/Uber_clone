@@ -1,9 +1,9 @@
 require('dotenv').config();
-const app=require('./app')
+const app=require('./src/app.js')
 const express=require('express')
 const http=require('http')
 const dotenv=require('dotenv')
-const connectDB=require('./Databse/db.js')
+const connectDB=require('./src/Databse/db.js')
 
 dotenv.config();
 
