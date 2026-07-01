@@ -21,7 +21,8 @@ const registerUser=async(req,res,next)=>{
         const hashpassword= await UserModel.hashpassword(password)
 
         const User=await UserModel.create({
-            username:{firstname,lastname},
+            fullname:{firstname:firstname,
+            lastname:lastname},
             email,
             password:hashpassword,
         })
