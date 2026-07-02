@@ -2,6 +2,7 @@ const express=require('express')
 const router=express.Router()
 const captaincontroller=require('../Controlers/captain.controller')
 const { body } = require('express-validator')
+const authMiddleware=require('../middlewares/auth.middleware')
 
 
 const registervalidation = [
@@ -23,5 +24,9 @@ const loginvalidation=[
 router.post('/register',registervalidation, captaincontroller.registerCaptain)
 
 router.post('/login',loginvalidation,captaincontroller.loginCaptain)
+
+router.get('/profile',authMiddleware.authCaptain,captaincontroller.getCaptainProfile)
+
+router.get('/logout',authMiddleware.authCaptain,captaincontroller.logOutCaptain)
 
 module.exports=router

@@ -1,5 +1,6 @@
 const captainModel = require('../models/captain.model');
 const { validationResult } = require('express-validator');
+const BlacklistModel = require('../models/blacklist.model');
 
 const registerCaptain = async (req, res, next) => {
     try {
@@ -42,7 +43,7 @@ const registerCaptain = async (req, res, next) => {
 
         res.status(200).json({
             message: 'Captain created successfully',
-            captain,
+            captain:captain,
             token
         });
 
@@ -78,7 +79,7 @@ const loginCaptain=async(req,res,next)=>{
         res.cookie('token',token)
         res.status(200).json({
             message: 'Captain logged in successfully',
-            captain,
+            captain:captain,
             token
         });
 
@@ -93,6 +94,24 @@ const loginCaptain=async(req,res,next)=>{
     }
 }
 
+const getCaptainProfile=async (req,res,next) => {
+    res.status(200).json(req.captain)
+}
+
+const logOutCaptain=async (req,res,next) => {
+    const token=req.cookies.token || req.headers.authorization?.split(' ')[1];
+
+    const isTokenBlacklisted=await BlacklistModel.findOne({token:token})
+    if(isTokenBlacklisted){
+        return res.status(401).json({message:'invalid user login first '})
+    }
+    await BlacklistModel.create({token:token})
+    res.clearCookie('token')
+    res.status(200).json({message:'captain logged out successfully'})
+
+
+}
+
 module.exports = {
-    registerCaptain,loginCaptain
+    registerCaptain,loginCaptain,getCaptainProfile,logOutCaptain
 };
