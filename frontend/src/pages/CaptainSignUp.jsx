@@ -47,7 +47,7 @@ const CaptainSignUp = () => {
 
         <img className='w-16 mb-5 mt-5' src="https://imgs.search.brave.com/Xr5AE-qF9u_eA3dArDHLnzd2OmEM7V44OSXOCtcAsuk/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9mcmVl/bG9nb3BuZy5jb20v/aW1hZ2VzL2FsbF9p/bWcvMTY1OTc2MTQy/NXViZXItZHJpdmVy/LWxvZ28tcG5nLnBu/Zw" alt="" />
 
-        <div className='flex flex-col w-full items-center h-full overflow-y-auto bg-[#eeee] font-medium'>
+        <div className='flex flex-col min-w-[300px] w-[600px] max-w-full items-center h-full overflow-y-auto bg-[#eeee] font-medium'>
 
         <form onSubmit={(e)=>submitHandle(e)}
         action="" className='bg-white flex flex-col gap-5 rounded shadow-md w-full py-6 px-4 mb-5'>
