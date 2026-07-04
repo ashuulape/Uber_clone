@@ -100,6 +100,7 @@ const getCaptainProfile=async (req,res,next) => {
 
 const logOutCaptain=async (req,res,next) => {
     const token=req.cookies.token || req.headers.authorization?.split(' ')[1];
+   
 
     const isTokenBlacklisted=await BlacklistModel.findOne({token:token})
     if(isTokenBlacklisted){
