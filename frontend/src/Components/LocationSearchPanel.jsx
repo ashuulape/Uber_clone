@@ -1,6 +1,6 @@
 import React from 'react'
 
-const LocationSearchPanel = () => {
+const LocationSearchPanel = (props) => {
   // Dummy data matching the user's provided screenshot
   const locations = [
     {
@@ -43,7 +43,9 @@ const LocationSearchPanel = () => {
   return (
     <div className="bg-black h-fit w-full overflow-y-auto px-5 py-3 flex flex-col gap-1 select-none">
       {locations.map((loc) => (
-        <div
+        <div 
+        onClick={()=>{props.setVehiclePanel(true) 
+          props.setpanelopen(false)} }
           key={loc.id}
           className="flex items-start gap-4 active:bg-zinc-900 p-2 rounded-xl transition-all duration-200 cursor-pointer"
         >

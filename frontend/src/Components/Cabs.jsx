@@ -1,7 +1,7 @@
 import React from 'react';
 import 'remixicon/fonts/remixicon.css';
 
-const Cabs = () => {
+const Cabs = (props) => {
   const cabs = [
     {
       id: 1,
@@ -25,7 +25,7 @@ const Cabs = () => {
       price: '₹95.46',
       image: 'https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_368,w_552/v1568070387/assets/b5/0a5191-836e-42bf-ad5d-6cb3100ec425/original/UberX.png',
      
-      icon: <i className="ri-snowy-line"></i>,
+      
     },
     {
       id: 3,
@@ -37,7 +37,7 @@ const Cabs = () => {
       price: '₹158.95',
       image: 'https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_368,w_552/v1569046531/assets/e2/852615-609b-498a-9426-8051781293fb/original/uberXL.png',
       
-      icon: null,
+     
     },
     {
       id: 4,
@@ -49,13 +49,15 @@ const Cabs = () => {
       price: '₹132.02',
       image: 'https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_368,w_552/v1568070387/assets/b5/0a5191-836e-42bf-ad5d-6cb3100ec425/original/UberX.png',
       selected: false,
-      icon: <i className="ri-flashlight-fill"></i>,
+      
     },
   ];
 
   return (
-    <div className="bg-clack text-white pt-10 px-4 font-sans h-full w-full ">
-      <div className="max-w-md mx-auto flex flex-col gap-2">
+    <div className="bg-clack text-white  px-4 font-sans h-full w-full flex flex-col items-center ">
+      <div onClick={()=>props.setVehiclePanel(false)} className="w-[40%] h-2 bg-white/50 rounded-full m-5 "></div>
+      <h1 className="text-start text-2xl font-semibold mb-6">Choose a Vehicle</h1>
+      <div className="max-w-md mx-auto justify-start flex flex-col gap-2">
         {cabs.map((cab) => (
           <div
             key={cab.id}
@@ -64,11 +66,11 @@ const Cabs = () => {
           >
             <div className="flex gap-4 w-full">
               <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center mt-1">
-                <img
-                  src={cab.image}
-                  alt={cab.name}
-                  className="w-full h-full object-contain"
-                />
+                
+                  <i className="ri-car-line text-3xl flex items-center justify-center  w-full h-full object-contain"></i>
+                  
+                 
+                
               </div>
               <div className="flex-1 flex flex-col justify-start">
                 <div className="flex items-center gap-2">
