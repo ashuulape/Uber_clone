@@ -47,7 +47,7 @@ const Userlogin = () => {
 
         <img className='invert h-30 ' src="https://media.ffycdn.net/us/postmates/eyJwYXRoIjoicG9zdG1hdGVzXC9hY2NvdW50c1wvODRcLzQwMDA1MTRcL3Byb2plY3RzXC8zMFwvYXNzZXRzXC84NFwvNTY0OFwvZDgwNzhiNTY5MDgxZGMwMDg2YTA5MzMxODRmNzRjYWYtMTYyMDcxOTg2Ni5wbmcifQ:postmates:8yzkJLajxr6_SqXPeLDmCnbN5hR-5WgmEC3pzohGaAA?width={width}&rect=2.5259622713415,0,797.47403772866,487&reference_width=800" alt="" />
 
-        <div className='flex flex-col min-w-[300px] w-[600px] max-w-full  items-center h-screen bg-[#eeee] py-8 font-medium '>
+        <div className='flex flex-col min-w-[300px] w-[600px] max-w-full  items-center h-screen  py-8 font-medium '>
 
         <form onSubmit={(e)=>submitHandle(e)}
         action="" className='bg-white flex flex-col gap-5  rounded shadow-md  w-full  py-6  '>

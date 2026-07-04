@@ -15,7 +15,7 @@ app.use(cors({
 }));
 
 app.use('/api/auth',authRoutes)
-app.use('/captain',captainRoutes)
+app.use('/api/captain',captainRoutes)
 
 app.get("/",(req,res)=>{
     res.send("Hello world")

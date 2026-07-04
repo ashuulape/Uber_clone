@@ -9,9 +9,9 @@ const registerCaptain = async (req, res, next) => {
             return res.status(400).json({ errors: errors.array() });
         }
 
-        const { fullname: { firstname, lastname }, email, password, vehicale } = req.body;
+        const { fullname: { firstname, lastname }, email, password, vehicle } = req.body;
 
-        if (!firstname || !email || !password || !vehicale || !vehicale.color || !vehicale.plate || !vehicale.capcity || !vehicale.vehicaleType) {
+        if (!firstname || !email || !password || !vehicle || !vehicle.color || !vehicle.plate || !vehicle.capacity || !vehicle.vehicleType) {
             return res.status(400).json({ message: 'All required fields must be provided' });
         }
 
@@ -29,11 +29,11 @@ const registerCaptain = async (req, res, next) => {
             },
             email,
             password: hashpassword,
-            vehicale: {
-                color: vehicale.color,
-                plate: vehicale.plate,
-                capcity: vehicale.capcity,
-                vehicaleType: vehicale.vehicaleType
+            vehicle: {
+                color: vehicle.color,
+                plate: vehicle.plate,
+                capacity: vehicle.capacity,
+                vehicleType: vehicle.vehicleType
             }
         });
 

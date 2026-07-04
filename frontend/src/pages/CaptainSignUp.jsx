@@ -1,8 +1,12 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useContext, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { captainDataContext } from '../Context/CaptainContext'
+import axios from 'axios'
 
-const CaptainSignUp = () => {
-    
+
+
+const CaptainSignUp =  () => {
+   const navigate=useNavigate()
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [firstname, setfirstname] = useState('')
@@ -12,7 +16,7 @@ const CaptainSignUp = () => {
     const [vehicleCapacity, setVehicleCapacity] = useState('')
     const [vehicleType, setVehicleType] = useState('')
     
-    const [captainData, setCaptainData] = useState({})
+    const {setCaptain}=useContext(captainDataContext)
 
     const submitHandle = async (e) => {
         e.preventDefault()
@@ -28,9 +32,25 @@ const CaptainSignUp = () => {
             }
   
         }
-        setCaptainData(newCaptainData)
-        console.log(captainData)
-        console.log(newCaptainData)
+       
+         const response=await axios.post(`${import.meta.env.VITE_BASE_URL}/api/captain/register`,newCaptainData)
+      if(response.status===200){
+        const data=response.data
+       
+        
+
+        setCaptain(data.captain)       
+
+        localStorage.setItem('token',data.token)
+        navigate('/captainhome')
+
+    
+        
+
+     }
+     else{
+        console.log(response.data)
+     }
         
         setEmail('')
         setPassword('')
@@ -47,7 +67,7 @@ const CaptainSignUp = () => {
 
         <img className='w-16 mb-5 mt-5' src="https://imgs.search.brave.com/Xr5AE-qF9u_eA3dArDHLnzd2OmEM7V44OSXOCtcAsuk/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9mcmVl/bG9nb3BuZy5jb20v/aW1hZ2VzL2FsbF9p/bWcvMTY1OTc2MTQy/NXViZXItZHJpdmVy/LWxvZ28tcG5nLnBu/Zw" alt="" />
 
-        <div className='flex flex-col min-w-[300px] w-[600px] max-w-full items-center h-full overflow-y-auto bg-[#eeee] font-medium'>
+        <div className='flex flex-col min-w-[300px] w-[600px] max-w-full items-center h-full overflow-y-auto font-medium'>
 
         <form onSubmit={(e)=>submitHandle(e)}
         action="" className='bg-white flex flex-col gap-5 rounded shadow-md w-full py-6 px-4 mb-5'>

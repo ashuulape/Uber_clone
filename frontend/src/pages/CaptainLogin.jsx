@@ -1,19 +1,41 @@
 import React from 'react'
+import { useContext } from 'react'
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { captainDataContext } from '../Context/CaptainContext'
+import axios from 'axios'
+
 
 const CaptainLogin = () => {
    const [email, setEmail] = useState("")
       const [password, setPassword] = useState("")
-      const [captainData, setcaptainData] = useState({})
+      
+
+      const {setCaptain}=useContext(captainDataContext)
+
+      const navigate=useNavigate()
   
       const submitHandle=async(e)=>{
           e.preventDefault()
-         setcaptainData({
+       const captainData={
           email:email,
           password:password
-         })
-         console.log(captainData)
+         }
+
+         const response=await axios.post(`${import.meta.env.VITE_BASE_URL}/api/captain/login`,captainData)
+        
+         
+         if(response.status===200){
+            const data=response.data
+            setCaptain(data.captain)
+            localStorage.setItem('token',data.token)
+            navigate('/captainhome')
+            console.log(response.data)
+         }else{
+            console.log(response.data)
+         }
+
+         
           setEmail('')
           setPassword('')
           
@@ -28,7 +50,7 @@ const CaptainLogin = () => {
   
         <img className='w-16 mb-5 mt-5' src="https://imgs.search.brave.com/Xr5AE-qF9u_eA3dArDHLnzd2OmEM7V44OSXOCtcAsuk/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9mcmVl/bG9nb3BuZy5jb20v/aW1hZ2VzL2FsbF9p/bWcvMTY1OTc2MTQy/NXViZXItZHJpdmVy/LWxvZ28tcG5nLnBu/Zw" alt="" />
   
-          <div className='flex flex-col min-w-[300px] w-[600px] max-w-full  items-center h-screen bg-[#eeee] py-8 font-medium '>
+          <div className='flex flex-col min-w-[300px] w-[600px] max-w-full  items-center h-screen  py-8 font-medium '>
   
           <form onSubmit={(e)=>submitHandle(e)}
           action="" className='bg-white flex flex-col gap-5  rounded shadow-md  w-full  py-6  '>

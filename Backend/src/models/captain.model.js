@@ -1,7 +1,6 @@
 const mongoose=require("mongoose")
 const bcrypt=require("bcrypt")
 const JWT=require("jsonwebtoken")
-const { captureOwnerStack } = require("react")
 
 const captainSchema=new mongoose.Schema({
     fullname:{
@@ -36,7 +35,7 @@ const captainSchema=new mongoose.Schema({
     enum:["active","inactive"],
     default:"inactive"
     },
-    vehicale:{
+    vehicle:{
     color:{
         type:String,
         required:true,
@@ -49,12 +48,12 @@ const captainSchema=new mongoose.Schema({
         minLength:[3],
         maxLength:[20]
     },
-    capcity:{
+    capacity:{
         type:Number,
         required:true,
         min:1
     },
-    vehicaleType:{
+    vehicleType:{
         type:String,
         required:true,
         enum:['car','auto','bike']
