@@ -54,13 +54,17 @@ const Cabs = (props) => {
   ];
 
   return (
-    <div className="bg-clack text-white  px-4 font-sans h-full w-full flex flex-col items-center ">
+    <div className="bg-black text-white  px-4 font-sans h-full w-full flex flex-col items-center rounded-t-3xl ">
       <div onClick={()=>props.setVehiclePanel(false)} className="w-[40%] h-2 bg-white/50 rounded-full m-5 "></div>
       <h1 className="text-start text-2xl font-semibold mb-6">Choose a Vehicle</h1>
       <div className="max-w-md mx-auto justify-start flex flex-col gap-2">
         {cabs.map((cab) => (
           <div
             key={cab.id}
+            onClick={() => {
+              props.setConfirmRidePanel(true)
+              props.setVehiclePanel(false)
+            }}
             className="flex items-start justify-between p-3 rounded-[20px] cursor-pointer active:outline-1"
              
           >
