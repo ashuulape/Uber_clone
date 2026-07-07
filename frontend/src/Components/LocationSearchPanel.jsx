@@ -1,7 +1,18 @@
 import React from 'react'
+import axios from 'axios'
 
 const LocationSearchPanel = (props) => {
   // Dummy data matching the user's provided screenshot
+
+
+// const res=axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}/api/maps/get-suggestion`,{
+//   params:{
+//     address:address
+
+//   }
+// } )
+
+
   const locations = [
     {
       id: 1,

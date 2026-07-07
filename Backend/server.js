@@ -3,7 +3,7 @@ const app=require('./src/app.js')
 const express=require('express')
 const http=require('http')
 const dotenv=require('dotenv')
-const connectDB=require('./src/Databse/db.js')
+const connectDB=require('./src/Database/db.js')
 
 dotenv.config();
 

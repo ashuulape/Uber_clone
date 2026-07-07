@@ -29,9 +29,18 @@ const getAddressCoordinate = async (address) => {
         throw new Error('Geocoding failed: No results found');
         }
 
-        return data.results;
+        const finaldata= data.results.map((data)=>{
+            return {
+               country:data.country,
+               state:data.state,
+               address:data.formatted,
+               city:data.city,
+               lon:data.lon,
+               lat:data.lat
+            }
+        })
     
- 
+ return finaldata
     
 };
 
@@ -42,11 +51,22 @@ const getDistanceTime=async(origin,destination)=>{
      if (!origin || !destination) {
         throw new Error('origin & distance is required');
     }
-        //https://api.geoapify.com/v1/routing?waypoints=16.6014579,74.5097272|16.6959348,74.4555755&mode=drive&apiKey=YOUR_API_KEY
+
+
+   const originCoords= await getAddressCoordinate(origin)
+   const destinationCoords=await getAddressCoordinate(destination)
+
+   const originLonLat=`${originCoords[0].lat},${originCoords[0].lon}`
+   const destinationLonLat=`${destinationCoords[0].lat},${destinationCoords[0].lon}`
+
+  
+   
+
+        // https://api.geoapify.com/v1/routing?waypoints=16.6014579,74.5097272|16.6959348,74.4555755&mode=drive&apiKey=YOUR_API_KEY
 
         const response = await axios.get(`${url}/v1/routing`, {
         params: {
-            waypoints:`${origin}|${destination}`,
+            waypoints:`${originLonLat}|${destinationLonLat}`,
             mode:'drive',
             apiKey:goeApikey
            
@@ -60,4 +80,40 @@ const getDistanceTime=async(origin,destination)=>{
 }
 
 
-module.exports={getAddressCoordinate,getDistanceTime}
+const Suggestion=async (address) => {
+
+    if(!address){
+        throw new Error('query is rewquired')
+        
+        
+    }
+    
+    const axios = require('axios');
+
+let config = {
+  method: 'get',
+  maxBodyLength: Infinity,
+  url: `${url}/v1/geocode/autocomplete`,
+   params:{
+                text:address,
+                limit:5,
+                format:'json',
+                apiKey:goeApikey
+            },
+  headers: { }
+};
+
+try {
+  const response = await axios.request(config);
+  console.log(JSON.stringify(response.data));
+    return response.data
+
+} catch (error) {
+  console.log(error);
+  throw error;
+}
+
+}
+
+
+module.exports={getAddressCoordinate,getDistanceTime,Suggestion}

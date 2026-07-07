@@ -13,5 +13,7 @@ router.get('/get-coordinates',validateGetCoordinates,authmiddleware.authUsers,ma
 
 router.get('/get-distance-time',validateGetDistanceTime,authmiddleware.authUsers,mapController.getDistanceTime)
 
+router.get('/get-suggestion',validateGetCoordinates,authmiddleware.authUsers,mapController.getSuggestion)
+
 
 module.exports=router

@@ -17,19 +17,10 @@ const getCoordinates=async (req,res,next) => {
     try{
         const data=await mapservice.getAddressCoordinate(address)
         
-        let finaldata=data.map((data)=>{
-            return {
-               country:data.country,
-               state:data.state,
-               address:data.formatted,
-               city:data.city,
-               lon:data.lon,
-               lat:data.lat
-            }
-        })
+    
         
          console.log(data);
-        res.status(200).json(finaldata)
+        res.status(200).json(data)
     }catch(err){
         console.log(err);
         
@@ -50,7 +41,7 @@ const getDistanceTime=async (req,res,next) => {
 
             console.log(data);
         
-          res.status(200).json({message:'fetched sucess',data})
+          res.status(200).json(data)
 
         
     } catch (error) {
@@ -61,4 +52,28 @@ const getDistanceTime=async (req,res,next) => {
 
 }
 
-module.exports={getCoordinates,getDistanceTime}
+const getSuggestion=async (req,res,next) => {
+      const errors=validationResult(req);
+    if(!errors.isEmpty()){
+        return res.status(400).json({errors:errors.array()})
+    }
+
+    const {address}=req.query;
+
+    
+
+    try{
+        const data=await mapservice.Suggestion(address)
+        
+    
+        
+         console.log(data);
+        res.status(200).json(data)
+    }catch(err){
+        console.log(err);
+        
+        res.status(500).json({message:"internal server error"})
+    }
+}
+
+module.exports={getCoordinates,getDistanceTime,getSuggestion}

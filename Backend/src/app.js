@@ -5,6 +5,7 @@ const captainRoutes=require('./Routes/captain.routes')
 const cookieParser = require('cookie-parser');
 const cors = require("cors");
 const mapRoutes=require('./Routes/maps.routes')
+const RideRoutes=require('./Routes/ride.routes')
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}))
@@ -18,6 +19,7 @@ app.use(cors({
 app.use('/api/auth',authRoutes)
 app.use('/api/captain',captainRoutes)
 app.use('/api/maps',mapRoutes)
+app.use('/api/ride',RideRoutes)
 
 app.get("/",(req,res)=>{
     res.send("Hello world")
