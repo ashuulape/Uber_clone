@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import axios from 'axios'
 import image from '../assets/map.png'
 import { useGSAP } from "@gsap/react/dist";
 import gsap from 'gsap';
@@ -15,6 +16,20 @@ const home = () => {
 
   gsap.registerPlugin(useGSAP);
 
+  const [Location, setLocation] = useState({});
+
+      navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLocation({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+      },
+      (err) => {
+        alert('Error getting location: ' + err.message);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
 
 
   const [pickup, setpickup] = useState('')
@@ -24,6 +39,12 @@ const home = () => {
   const [ConfirmRidePanel, setConfirmRidePanel] = useState(false)
   const [lookingPanel, setlookingPanel] = useState(false)
   const [WaitingForDriverPanel, setWaitingForDriverPanel] = useState(false)
+  const [suggestions, setSuggestions] = useState([])
+  const [activeField, setActiveField] = useState('pickup')
+  const [isFetchingSuggestions, setIsFetchingSuggestions] = useState(false)
+const [fare, setfare] = useState({})
+  const [rideInfo, setRideInfo] = useState(null)
+  const debounceTimerRef = useRef(null)
   const panelRef = useRef(null)
   const arrow = useRef(null)
   const vehiclePanelRef = useRef(null)
@@ -34,7 +55,76 @@ const home = () => {
   
 const submitHandler = (e) => {
   e.preventDefault();
-  console.log(e.target.value);
+ 
+}
+
+const fetchSuggestions = async (value, field) => {
+  if (!value?.trim()) {
+    setSuggestions([])
+    return
+  }
+
+  setActiveField(field)
+  setpanelopen(true)
+  setIsFetchingSuggestions(true)
+
+  try {
+    const token = localStorage.getItem('token')
+    const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/maps/get-suggestion`, {
+      params: { address: value },
+      headers: { Authorization: `Bearer ${token}` }
+    })
+
+    const items = Array.isArray(response?.data?.features)
+      ? response.data.features
+      : Array.isArray(response?.data?.results)
+        ? response.data.results
+        : []
+
+    const normalized = items.map((item, index) => {
+      const props = item.properties || item
+      const address = props.formatted || props.address_line1 || props.name || ''
+
+      return {
+        id: props.place_id || props.osm_id || `${props.name || 'suggestion'}-${index}`,
+        name: props.name || props.formatted || props.address_line1 || 'Location',
+        address,
+        type: 'location',
+        lat: props.lat ?? item.lat,
+        lon: props.lon ?? item.lon,
+      }
+    })
+
+    setSuggestions(normalized)
+  } catch (error) {
+    console.error('Suggestion fetch failed', error)
+    setSuggestions([])
+  } finally {
+    setIsFetchingSuggestions(false)
+  }
+}
+
+const debouncedFetchSuggestions = (value, field) => {
+  if (debounceTimerRef.current) {
+    clearTimeout(debounceTimerRef.current)
+  }
+
+  debounceTimerRef.current = setTimeout(() => {
+    fetchSuggestions(value, field)
+  }, 1000)
+}
+
+const handleSuggestionSelect = (location) => {
+  const value = location.address || location.name
+
+  if (activeField === 'destination') {
+    setdestination(value)
+  } else {
+    setpickup(value)
+  }
+
+  setSuggestions([])
+  
 }
 
 useGSAP(()=>{
@@ -133,6 +223,53 @@ useGSAP(()=>{
   }
 },[WaitingForDriverPanel])
 
+const Findtrip = async() => {
+  
+  
+  const token = localStorage.getItem('token')
+  try {
+    console.log(pickup, destination);
+    const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/ride/getfare`, {
+      params: {
+        origin: pickup,
+        destination: destination
+      },
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    setfare(response.data)
+    console.log(response.data);
+    
+  } catch (error) {
+    console.error('Error fetching fare:', error)
+  }
+
+
+  if(pickup && destination){
+    setVehiclePanel(true) 
+    setpanelopen(false)
+  }
+  
+}
+
+const SelectRideAndConfirm=async (VehicleType) => {
+
+const response=await axios.post(`${import.meta.env.VITE_BASE_URL}/api/rides/create`,{
+  origin:pickup,
+  destination:destination,
+  vehicleType: VehicleType
+},{
+  headers:{
+    Authorization:`Bearer ${localStorage.getItem('token')}`
+  }
+}) 
+
+console.log(
+  response.data
+);
+
+
+  
+}
 
   return (
     <div className="relative h-screen w-screen overflow-hidden">
@@ -159,7 +296,7 @@ useGSAP(()=>{
            
           <h2  className="text-white text-3xl text-center  font-semibold m-2">Find a trip</h2>
          
-         <form onClick={()=>setpanelopen(true)} onSubmit={(e)=>{submitHandler(e)}} className="h-fit flex flex-col px-4 gap-4 items-center w-full  text-white font-medium relative pb-8">
+         <form  onSubmit={(e)=>{submitHandler(e)}} className="h-fit flex flex-col px-4 gap-4 items-center w-full  text-white font-medium relative pb-8">
            <div className='h-fit w-full flex flex-row px-4 gap-2  text-white font-medium relative ' >
 
             <div className=" flex w-[5%] items-center justify-center">
@@ -171,33 +308,46 @@ useGSAP(()=>{
            </div>
             <div className="flex flex-col gap-4 w-full">
               <input
+              onClick={()=>setpanelopen(true)}
               value={pickup}
-              onChange={(e)=>setpickup(e.target.value)}
+              onChange={(e) => {
+                setpickup(e.target.value)
+                debouncedFetchSuggestions(e.target.value, 'pickup')
+              }}
               className="text-lg bg-white/10 border-[0.5px] border-white/15  py-2 rounded-lg px-4 border-0 w-full "
               type="text"
               placeholder="Enter your pickup location"
             />
             <input
+            onClick={()=>setpanelopen(true)}
             value={destination}
-            onChange={(e)=>setdestination(e.target.value)}
+            onChange={(e) => {
+              setdestination(e.target.value)
+              debouncedFetchSuggestions(e.target.value, 'destination')
+            }}
               className="text-lg bg-white/10 border-[0.5px] border-white/15  py-2 rounded-lg px-4 border-0 w-full"
               type="text"
               placeholder="Enter your destination"
             />
             </div>
            </div>
-            <button className="bg-white text-black w-[80%] text-lg  px-4 py-2 rounded ">Book</button>
+            <button onClick={Findtrip} className="bg-white text-black w-[80%] text-lg  px-4 py-2 rounded ">Find</button>
           </form>
         </div>
         <div ref={panelRef} className="bg-black h-0 relative  overflow-y-hidden pointer-events-auto ">
-            <  LocationSearchPanel setVehiclePanel={setVehiclePanel} setpanelopen={setpanelopen}/>  
+            <LocationSearchPanel
+              suggestions={suggestions}
+              isLoading={isFetchingSuggestions}
+              onSelectSuggestion={handleSuggestionSelect}
+              setpanelopen={setpanelopen}
+            />
         </div>
       </div> 
         <div  ref={vehiclePanelRef} className='h-fit rounded-2xl translate-y-full bg-black absolute  bottom-0 w-full z-20'>        
-              <Cabs setVehiclePanel={setVehiclePanel} setConfirmRidePanel={setConfirmRidePanel} />
+              <Cabs setVehiclePanel={setVehiclePanel} setConfirmRidePanel={setConfirmRidePanel} fare={fare} setRideInfo={setRideInfo} pickup={pickup} destination={destination} />
         </div> 
         <div ref={ConfirmRide} className='h-fit rounded-2xl translate-y-full bg-black absolute  bottom-0 w-full z-30'>
-          <Confirmedride setConfirmRidePanel={setConfirmRidePanel} setlookingPanel={setlookingPanel} />
+          <Confirmedride setConfirmRidePanel={setConfirmRidePanel} setlookingPanel={setlookingPanel} rideInfo={rideInfo} SelectRideAndConfirm={SelectRideAndConfirm} />
         </div>
         <div ref={LookingRideRef} className='h-fit rounded-2xl translate-y-full bg-black absolute  bottom-0 w-full z-30'>
          <LookingForDriver setlookingPanel={setlookingPanel}/>

@@ -29,6 +29,22 @@ const createRide = async (req, res) => {
 
 }
 
+const getFair = async (req, res) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()) {
+        return res.status(400).json({validation: 'error' , errors: errors.array()});
+    }
 
-module.exports={createRide}
+    const { origin, destination } = req.query;
+
+    try {
+        const fair = await rideService.getFare(origin, destination);
+        res.status(200).json(fair);
+    } catch (error) {
+        res.status(400).json({error: error.message});
+    }
+}
+
+
+module.exports={createRide, getFair}
 

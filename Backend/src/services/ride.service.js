@@ -2,7 +2,7 @@ const rideModel=require('../models/ride.model')
 const mapsService=require('./map.service')
 const crypto=require('crypto')
 
-const getFair=async (origin, destination) => {
+const getFare=async (origin, destination) => {
     
     if(!origin || !destination){
         throw new Error('origin & destination is required');
@@ -58,7 +58,7 @@ const createRide=async ({userId, origin, destination,vehicleType}) => {
 
   
 
-    const ride=rideModel.create({
+    const ride= await rideModel.create({
         user:userId,
         origin:origin,
         destination:destination,
@@ -72,6 +72,6 @@ const createRide=async ({userId, origin, destination,vehicleType}) => {
 };
 
 module.exports={
-    getFair,
+    getFare,
     createRide
 }

@@ -1,105 +1,116 @@
-import React from 'react';
+import React, { useState } from 'react';
+import autoImage from '../assets/auto.png'
+import bikeImage from '../assets/bike.png'
+import carImage from '../assets/car.png'
 import 'remixicon/fonts/remixicon.css';
 
-const Cabs = (props) => {
-  const cabs = [
-    {
-      id: 1,
-      name: 'Auto',
-      seats: 3,
-      time: '2:47am',
-      duration: '3 min',
-      description: 'Pay directly to driver, cash/UPI only',
-      price: '₹70.40',
-      image: 'https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_368,w_552/v1648431773/assets/1d/db8c56-0204-4ce4-81ce-56a11a07fe98/original/Uber_Auto_558x372_pixels_Desktop.png',
-      selected: true,
-      icon: null,
-    },
-    {
-      id: 2,
-      name: 'Uber Go AC',
-      seats: 4,
-      time: '2:47am',
-      duration: '3 min',
-      description: 'Affordable compact rides',
-      price: '₹95.46',
-      image: 'https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_368,w_552/v1568070387/assets/b5/0a5191-836e-42bf-ad5d-6cb3100ec425/original/UberX.png',
-     
-      
-    },
-    {
-      id: 3,
-      name: 'UberXL',
-      seats: 6,
-      time: '2:47am',
-      duration: '3 min',
-      description: 'Comfortable SUVs',
-      price: '₹158.95',
-      image: 'https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_368,w_552/v1569046531/assets/e2/852615-609b-498a-9426-8051781293fb/original/uberXL.png',
-      
-     
-    },
-    {
-      id: 4,
-      name: 'Go Priority',
-      seats: 4,
-      time: '2:46am',
-      duration: '2 min',
-      description: 'Priority pickup',
-      price: '₹132.02',
-      image: 'https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_368,w_552/v1568070387/assets/b5/0a5191-836e-42bf-ad5d-6cb3100ec425/original/UberX.png',
-      selected: false,
-      
-    },
-  ];
+const VEHICLE_CONFIG = [
+  {
+    key: 'auto',
+    name: 'Auto',
+    seats: 3,
+    description: 'Pay directly to driver, cash/UPI only',
+    image: autoImage,
+    icon: 'ri-motorbike-line',
+  },
+  {
+    key: 'bike',
+    name: 'Bike',
+    seats: 1,
+    description: 'Quick & affordable two-wheeler rides',
+    image: bikeImage,
+    icon: 'ri-bike-line',
+  },
+  {
+    key: 'car',
+    name: 'UberGo',
+    seats: 4,
+    description: 'Affordable compact rides',
+    image:carImage,
+    icon: 'ri-car-line',
+  },
+];
+
+const Cabs = ({ setVehiclePanel, setConfirmRidePanel, fare = {}, setRideInfo, pickup, destination }) => {
+  const [selected, setSelected] = useState(null);
+
+  const distance = fare.distance ?? null;
 
   return (
-    <div className="bg-black text-white  px-4 font-sans h-full w-full flex flex-col items-center rounded-t-3xl ">
-      <div onClick={()=>props.setVehiclePanel(false)} className="w-[40%] h-2 bg-white/50 rounded-full m-5 "></div>
-      <h1 className="text-start text-2xl font-semibold mb-6">Choose a Vehicle</h1>
-      <div className="max-w-md mx-auto justify-start flex flex-col gap-2">
-        {cabs.map((cab) => (
-          <div
-            key={cab.id}
-            onClick={() => {
-              props.setConfirmRidePanel(true)
-              props.setVehiclePanel(false)
-            }}
-            className="flex items-start justify-between p-3 rounded-[20px] cursor-pointer active:outline-1"
-             
-          >
-            <div className="flex gap-4 w-full">
-              <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center mt-1">
-                
-                  <i className="ri-car-line text-3xl flex items-center justify-center  w-full h-full object-contain"></i>
-                  
-                 
-                
+    <div className="bg-black text-white px-4 font-sans h-full w-full flex flex-col items-center rounded-t-3xl">
+      {/* Drag handle */}
+      <div
+        onClick={() => setVehiclePanel(false)}
+        className="w-[40%] h-2 bg-white/50 rounded-full m-5 cursor-pointer"
+      />
+
+      <h1 className="text-start w-full text-2xl font-semibold mb-2">Choose a Vehicle</h1>
+
+      {distance !== null && (
+        <p className="text-start w-full text-sm text-gray-400 mb-4">
+          <i className="ri-route-line mr-1" />
+          {distance} km away
+        </p>
+      )}
+
+      <div className="w-full max-w-md flex flex-col gap-2 pb-4">
+        {VEHICLE_CONFIG.map((vehicle) => {
+          const price = fare[vehicle.key];
+          const isSelected = selected === vehicle.key;
+
+          return (
+            <div
+              key={vehicle.key}
+              onClick={() => {
+                setSelected(vehicle.key);
+                setRideInfo({
+                  vehicleKey: vehicle.key,
+                  vehicleName: vehicle.name,
+                  vehicleImage: vehicle.image,
+                  seats: vehicle.seats,
+                  description: vehicle.description,
+                  price: fare[vehicle.key],
+                  distance: fare.distance,
+                  pickup,
+                  destination,
+                });
+                setConfirmRidePanel(true);
+                setVehiclePanel(false);
+              }}
+              className={`flex items-center justify-between p-3 rounded-2xl cursor-pointer transition-all duration-200
+                ${isSelected
+                  ? 'bg-white/15 outline outline-1 outline-white'
+                  : 'hover:bg-white/10 active:bg-white/15'
+                }`}
+            >
+              {/* Icon */}
+              <div className="w-15 h-15 flex-shrink-0 flex items-center justify-center rounded-xl mr-3">
+               <img src={vehicle.image} alt={vehicle.name} className='h-full' />
               </div>
-              <div className="flex-1 flex flex-col justify-start">
+
+              {/* Info */}
+              <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <h3 className="text-[22px] font-medium flex items-center gap-1.5 leading-none">
-                    {cab.icon && <span className="text-white text-[20px]">{cab.icon}</span>}
-                    {cab.name}
-                  </h3>
-                  <div className="flex items-center text-[15px] font-medium text-gray-300">
-                    <i className="ri-user-3-line mr-1 text-[13px]"></i>
-                    {cab.seats}
-                  </div>
+                  <h3 className="text-[18px] font-semibold leading-none">{vehicle.name}</h3>
+                  <span className="flex items-center text-[13px] text-gray-300 gap-0.5">
+                    <i className="ri-user-3-line text-[12px]" />
+                    {vehicle.seats}
+                  </span>
                 </div>
-                <div className="text-[15px] font-medium text-gray-200 mt-1">
-                  {cab.time} <span className="text-gray-400 font-bold mx-1">·</span> {cab.duration}
-                </div>
-                <div className="text-[13px] text-gray-400 mt-1 line-clamp-1">
-                  {cab.description}
-                </div>
+                <p className="text-[13px] text-gray-400 mt-1 line-clamp-1">{vehicle.description}</p>
+              </div>
+
+              {/* Price */}
+              <div className="ml-4 text-right">
+                {price !== undefined ? (
+                  <span className="text-[20px] font-bold">₹{price}</span>
+                ) : (
+                  <span className="text-gray-500 text-sm">N/A</span>
+                )}
               </div>
             </div>
-            <div className="text-[22px] font-medium ml-4 whitespace-nowrap">
-              {cab.price}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
