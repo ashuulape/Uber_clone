@@ -1,3 +1,4 @@
+
 const mapservice=require('../services/map.service')
 const {validationResult}=require('express-validator')
 
@@ -18,15 +19,20 @@ const getCoordinates=async (req,res,next) => {
         
         let finaldata=data.map((data)=>{
             return {
-                title:data.title,
-                lat:data.position.coordinates[0],
-                lon:data.position.coordinates[1]
+               country:data.country,
+               state:data.state,
+               address:data.formatted,
+               city:data.city,
+               lon:data.lon,
+               lat:data.lat
             }
         })
         
          console.log(data);
         res.status(200).json(finaldata)
     }catch(err){
+        console.log(err);
+        
         res.status(500).json({message:"internal server error"})
     }
 }
@@ -37,13 +43,19 @@ const getDistanceTime=async (req,res,next) => {
         return res.status(400).json({errors:errors.array()})
     }
     
-    const {origin,destination}=req.body
+    const {origin,destination}=req.query
 
     try {
           const data=await mapservice.getDistanceTime(origin,destination)
 
+            console.log(data);
+        
+          res.status(200).json({message:'fetched sucess',data})
+
         
     } catch (error) {
+        console.log(error);
+        
         res.status(500).json({message:"internal server error"})
     }
 

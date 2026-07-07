@@ -1,8 +1,10 @@
 
 const axios = require('axios');
+
 require('dotenv').config()
 
-const url = process.env.BASE_URL
+const url = process.env.GEOAPIFY_BASE_URL
+const goeApikey=process.env.GEOAPIFY_API_KEY
 
 
 
@@ -10,57 +12,50 @@ const getAddressCoordinate = async (address) => {
     if (!address || address.trim() === '') {
         throw new Error('Address is required');
     }
-
-
-    
     
 
-    const response = await axios.get(`${url}/maps/orbis/places/geocode`, {
-        params: {
-            query:address,
-           
-        },
-        headers:{
-            'TomTom-Api-Key':process.env.TOM_TOM_API_KEY,
-            'TomTom-Api-Version':2,
-            Attributes:'results(title,position)'
+
+        const response=await axios.get(`${url}/v1/geocode/search`,{
+            params:{
+                text:address,
+                format:'json',
+                apiKey:goeApikey
+            }
+        })
+
+        const data = response.data;
+
+        if (!data.results || !data.results.length) {
+        throw new Error('Geocoding failed: No results found');
         }
-    });
 
+        return data.results;
     
-    
-    const data = response.data.results;
-
-
-    // if (data.status !== 'OK' || !data.results.length) {
-    //     throw new Error(`Geocoding failed: ${data.status} — ${data.error_message || 'No results found'}`);
-    // }
  
-
-    return data
-        
     
 };
 
 
 
-const getDistanceTime=async()=>{
+const getDistanceTime=async(origin,destination)=>{
     
-     if (!origin || !distance) {
+     if (!origin || !destination) {
         throw new Error('origin & distance is required');
     }
+        //https://api.geoapify.com/v1/routing?waypoints=16.6014579,74.5097272|16.6959348,74.4555755&mode=drive&apiKey=YOUR_API_KEY
 
-        const response = await axios.post(`${url}/routing/matrix/2/async?key=${process.env.TOM_TOM_API_KEY}`, {
+        const response = await axios.get(`${url}/v1/routing`, {
         params: {
-            query:address,
+            waypoints:`${origin}|${destination}`,
+            mode:'drive',
+            apiKey:goeApikey
            
-        },
-        headers:{
-            'TomTom-Api-Key':process.env.TOM_TOM_API_KEY,
-            'TomTom-Api-Version':2,
-            Attributes:'results(title,position)'
         }
     });
+
+    return response.data
+
+
 
 }
 
