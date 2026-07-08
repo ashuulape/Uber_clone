@@ -5,15 +5,19 @@ import App from './App.jsx'
 import { BrowserRouter } from 'react-router-dom'
 import UserContext from './Context/UserContext.jsx'
 import CaptainContext from './Context/CaptainContext.jsx'
-
+import RideProvider from './Context/RideContext.jsx'
+import SocketProvider from './Context/SocketContext.jsx'
 
 createRoot(document.getElementById('root')).render(
 <CaptainContext>
     <UserContext>
-    <BrowserRouter>
-    <App />
-    </BrowserRouter>
+      <RideProvider>
+        <SocketProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </SocketProvider>
+      </RideProvider>
     </UserContext>
 </CaptainContext>
-
 )

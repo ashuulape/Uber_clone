@@ -1,7 +1,15 @@
 import React from 'react'
 import 'remixicon/fonts/remixicon.css'
+import { useRideContext } from '../Context/RideContext'
 
-const Confirmedride = ({ setConfirmRidePanel, setlookingPanel, rideInfo, SelectRideAndConfirm }) => {
+const Confirmedride = () => {
+  const {
+    setConfirmRidePanel,
+    setLookingPanel,
+    rideInfo,
+    confirmRideSelection,
+  } = useRideContext()
+
   if (!rideInfo) return null;
 
   const {
@@ -85,8 +93,8 @@ const Confirmedride = ({ setConfirmRidePanel, setlookingPanel, rideInfo, SelectR
       <button
         onClick={() => {
 
-          SelectRideAndConfirm(vehicleKey)          
-          setlookingPanel(true);
+          confirmRideSelection(vehicleKey)
+          setLookingPanel(true);
           setConfirmRidePanel(false);
 
         }}

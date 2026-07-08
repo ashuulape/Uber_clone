@@ -54,8 +54,9 @@ const createRide=async ({userId, origin, destination,vehicleType}) => {
         throw new Error('userId, origin, destination and vehicleType is required');
     }
 
-    const fair=await getFair(origin,destination)
+    const fair=await getFare(origin,destination)
 
+  console.log('fair:', fair);
   
 
     const ride= await rideModel.create({

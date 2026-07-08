@@ -2,7 +2,7 @@ import React from 'react'
 
 const RidePopUP = (props) => {
   return (
-   <div className='bg-black text-white px-4 font-sans h-full w-full flex flex-col items-center rounded-t-3xl pb-8 shadow-[0_-10px_20px_rgba(0,0,0,0.5)]'>
+   <div className='bg-black text-white px-4 font-sans w-full flex flex-col items-center rounded-t-3xl pb-8 shadow-[0_-10px_20px_rgba(0,0,0,0.5)]'>
         {/* Top indicator handle to close */}
         <div onClick={() => {
             if (props.setRidePopupPanel) props.setRidePopupPanel(false)

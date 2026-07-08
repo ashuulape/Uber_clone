@@ -1,5 +1,6 @@
 
 const axios = require('axios');
+const captainModel=require('../models/captain.model')
 
 require('dotenv').config()
 
@@ -105,7 +106,7 @@ let config = {
 
 try {
   const response = await axios.request(config);
-  console.log(JSON.stringify(response.data));
+  
     return response.data
 
 } catch (error) {
@@ -132,5 +133,21 @@ const CurrentLocation=async (lat,lon) => {
 
     return response.data;
 }
+ 
+const getCaptainsInTheRadius=async (lat,lng ,radius) => {
+    console.log(lat,lng);
+    
+    const captains =await captainModel.find({
 
-module.exports={getAddressCoordinate,getDistanceTime,Suggestion,CurrentLocation  }
+        location:{
+            $geoWithin:{
+                $centerSphere:[[lat,lng],radius/6371]
+            }
+        }
+
+
+    })
+    return captains
+}
+
+module.exports={getAddressCoordinate,getDistanceTime,Suggestion,CurrentLocation,getCaptainsInTheRadius  }

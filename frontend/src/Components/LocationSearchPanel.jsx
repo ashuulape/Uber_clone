@@ -1,6 +1,8 @@
 import React from 'react'
+import { useRideContext } from '../Context/RideContext'
 
-const LocationSearchPanel = ({ suggestions = [], isLoading = false, onSelectSuggestion, setpanelopen }) => {
+const LocationSearchPanel = ({ suggestions = [], isLoading = false, onSelectSuggestion }) => {
+  const { setPanelopen } = useRideContext()
   const hasSuggestions = suggestions.length > 0
 
   return (
@@ -14,6 +16,7 @@ const LocationSearchPanel = ({ suggestions = [], isLoading = false, onSelectSugg
           <div
             onClick={() => {
               onSelectSuggestion?.(loc)
+              setPanelopen(false)
             }}
             key={loc.id}
             className="flex items-start gap-4 active:bg-zinc-900 p-2 rounded-xl transition-all duration-200 cursor-pointer"

@@ -26,7 +26,7 @@ const captainSchema=new mongoose.Schema({
         type:String,
         required:true
     },
-    socketid:{
+    socketId:{
         type:String,
         default:""
     },

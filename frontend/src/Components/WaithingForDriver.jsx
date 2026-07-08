@@ -1,12 +1,14 @@
 import React from 'react'
 import car from '../assets/car.png'
+import { useRideContext } from '../Context/RideContext'
 
-const WaitForDriver = (props) => {
+const WaitForDriver = () => {
+  const { setWaitingForDriverPanel } = useRideContext()
   return (
      <div className='bg-black text-white px-4 font-sans h-full w-full flex flex-col items-center rounded-t-3xl pb-8'>
           {/* Top indicator handle to close */}
           <div onClick={() => {
-               props.setWaitingForDriverPanel(false)
+               setWaitingForDriverPanel(false)
           }} className="w-[40%] h-2 bg-white/50 rounded-full m-5 cursor-pointer"></div>
           
           <div className="flex items-center justify-between w-full">

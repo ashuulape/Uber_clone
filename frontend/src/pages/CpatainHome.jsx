@@ -1,15 +1,59 @@
-import React, { useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import image from '../assets/map.png'
 import CaptainDetails from '../Components/CaptainDetails'
 import RidePopUP from '../Components/RidePopUP'
 import ConfirmRidePopUP from '../Components/ConfirmRidePopUP'
 import { useGSAP } from '@gsap/react/dist'
 import gsap from 'gsap'
+import Map from '../Components/Map'
+import { captainDataContext } from '../Context/CaptainContext'
+import { useSocketContext } from '../Context/SocketContext'
+
 
 const CpatainHome = () => {
+ 
+  
+  const { captain } = useContext(captainDataContext)
+  const captainName = [captain?.fullname?.firstname, captain?.fullname?.lastname].filter(Boolean).join(' ') || 'Captain'
+ 
 
-  const [showRide,setShowRide] = useState(true)
+
+    const { sendMessage, connected,socket } = useSocketContext()
+     
+
+    
+   
+     React.useEffect(() => {
+       if (!connected || !captain?._id) return
+        
+       sendMessage('join', {
+         userType: 'captain',
+         userId: captain._id,
+       })
+
+       const locationInterval = setInterval(() => {
+         if (navigator.geolocation) {
+           navigator.geolocation.getCurrentPosition((position) => {
+             const { latitude, longitude } = position.coords
+             sendMessage('update-location-captain', {
+               userId: captain._id,
+               userType: 'captain',
+               location: {
+                 lat:latitude,
+                 lng:longitude
+               }
+             })
+           })
+         }
+       }, 10000)
+
+       return () => clearInterval(locationInterval)
+       
+     }, [connected, sendMessage, captain?._id])
+
+  
+
+  const [showRide,setShowRide] = useState(false)
   const [confirmShowRide, setConfirmShowRide] = useState(false)
 const RidePopUpRef = useRef(null)
 const ConfirmPopUpRef = useRef(null)
@@ -61,28 +105,34 @@ useGSAP(()=>{
                 <i className="ri-menu-line text-2xl font-bold"></i>
             </div>
 
-            <img className='invert h-15 ' src="https://media.ffycdn.net/us/postmates/eyJwYXRoIjoicG9zdG1hdGVzXC9hY2NvdW50c1wvODRcLzQwMDA1MTRcL3Byb2plY3RzXC8zMFwvYXNzZXRzXC84NFwvNTY0OFwvZDgwNzhiNTY5MDgxZGMwMDg2YTA5MzMxODRmNzRjYWYtMTYyMDcxOTg2Ni5wbmcifQ:postmates:8yzkJLajxr6_SqXPeLDmCnbN5hR-5WgmEC3pzohGaAA?width={width}&rect=2.5259622713415,0,797.47403772866,487&reference_width=800" alt="" />
+            <div className='flex flex-col items-start text-white'>
+              <p className='text-[10px] uppercase tracking-[0.3em] text-white/60'>Driver</p>
+              <p className='text-sm font-semibold text-capitalize'>{captainName}</p>
+            </div>
 
-            
             <Link to='/captain/logout' className='w-12 h-12 bg-black backdrop-blur-md flex items-center justify-center rounded-full border border-white/30 text-white shadow-lg active:scale-95 transition-transform'>
                 <i className="ri-logout-box-r-line text-2xl font-bold"></i>
             </Link>
         </div>
 
         {/* Map Background */}
-        <div className='h-[60%] w-full overflow-hidden'>
-            <img className='h-full w-full object-cover' src={image} alt="Map" />
+        <div className='h-full w-full overflow-hidden absolute top-0 left-0 z-0'>
+           <Map/>
         </div>
 
         {/* Bottom Details Panel */}
-       <CaptainDetails/>
+      <div className='absolute inset-x-0 bottom-0 z-20 pointer-events-none'>
+        <div className='pointer-events-auto'>
+          <CaptainDetails />
+        </div>
 
-       <div ref={RidePopUpRef} className='h-fit rounded-2xl translate-y-full bg-black absolute  bottom-0 w-full z-30'>
-            <RidePopUP setShowRide={setShowRide} setConfirmShowRide={setConfirmShowRide} />
-       </div>
-       <div ref={ConfirmPopUpRef} className='h-fit rounded-2xl translate-y-full bg-black absolute  bottom-0 w-full z-40'>
-            <ConfirmRidePopUP setConfirmShowRide={setConfirmShowRide} />
-       </div>
+        <div ref={RidePopUpRef} className='pointer-events-auto absolute inset-x-0 bottom-0 z-30 translate-y-full'>
+          <RidePopUP setShowRide={setShowRide} setConfirmShowRide={setConfirmShowRide} />
+        </div>
+        <div ref={ConfirmPopUpRef} className='pointer-events-auto absolute inset-x-0 bottom-0 z-40 translate-y-full'>
+          <ConfirmRidePopUP setConfirmShowRide={setConfirmShowRide} />
+        </div>
+      </div>
     </div>
   )
 }

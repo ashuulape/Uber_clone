@@ -3,6 +3,7 @@ import autoImage from '../assets/auto.png'
 import bikeImage from '../assets/bike.png'
 import carImage from '../assets/car.png'
 import 'remixicon/fonts/remixicon.css';
+import { useRideContext } from '../Context/RideContext';
 
 const VEHICLE_CONFIG = [
   {
@@ -31,7 +32,15 @@ const VEHICLE_CONFIG = [
   },
 ];
 
-const Cabs = ({ setVehiclePanel, setConfirmRidePanel, fare = {}, setRideInfo, pickup, destination }) => {
+const Cabs = () => {
+  const {
+    setVehiclePanel,
+    setConfirmRidePanel,
+    fare = {},
+    setRideInfo,
+    pickup,
+    destination,
+  } = useRideContext();
   const [selected, setSelected] = useState(null);
 
   const distance = fare.distance ?? null;

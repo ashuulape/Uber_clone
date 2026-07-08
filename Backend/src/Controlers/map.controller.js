@@ -60,14 +60,9 @@ const getSuggestion=async (req,res,next) => {
 
     const {address}=req.query;
 
-    
-
     try{
         const data=await mapservice.Suggestion(address)
-        
-    
-        
-         console.log(data);
+
         res.status(200).json(data)
     }catch(err){
         console.log(err);

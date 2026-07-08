@@ -1,7 +1,11 @@
 import React from 'react'
 import car from '../assets/car.png'
+import { useRideContext } from '../Context/RideContext'
 
 const LookingForDriver = () => {
+  const { rideInfo } = useRideContext();
+
+
   return (
      <div className='bg-black text-white px-4 font-sans h-full w-full flex flex-col items-center rounded-t-3xl pb-8'>
           {/* Top indicator handle to close */}
@@ -13,7 +17,7 @@ const LookingForDriver = () => {
           <div className="w-full h-40 flex justify-center items-center relative mt-4">
             <div className="absolute w-24 h-24 bg-gray-500/50 rounded-full animate-ping"></div>
             <div className="absolute w-32 h-32 border border-gray-500/20 rounded-full animate-ping" style={{ animationDelay: '0.5s' }}></div>
-            <img className="h-[120%] object-cover absolute top-0 bottom-0 z-10" src={car} alt="Vehicle" />
+            <img className="h-[120%] object-cover absolute top-0 bottom-0 z-10" src={rideInfo?.vehicleImage || car} alt="Vehicle" />
           </div>
     
           <div className="w-full flex flex-col gap-4 mt-4 px-2">
@@ -21,8 +25,8 @@ const LookingForDriver = () => {
             <div className="flex items-center gap-4 border-b border-gray-700 pb-4">
               <i className="ri-map-pin-2-fill text-xl text-gray-300"></i>
               <div>
-                <h3 className="text-lg font-medium">562/11-A</h3>
-                <p className="text-sm text-gray-400">Kankariya Talab, Bhopal</p>
+                <h3 className="text-lg font-medium">Pickup Location</h3>
+                <p className="text-sm text-gray-400">{rideInfo?.pickup  }</p>
               </div>
             </div>
     
@@ -30,8 +34,8 @@ const LookingForDriver = () => {
             <div className="flex items-center gap-4 border-b border-gray-700 pb-4">
               <i className="ri-map-pin-fill text-xl text-gray-300"></i>
               <div>
-                <h3 className="text-lg font-medium">Third Wave Coffee</h3>
-                <p className="text-sm text-gray-400">17th Cross Rd, PWD Quarters, 1st Sector, HSR Layout, Bengaluru, Karnataka</p>
+                <h3 className="text-lg font-medium">Destination</h3>
+                <p className="text-sm text-gray-400">{rideInfo?.destination}</p>
               </div>
             </div>
     
@@ -39,7 +43,7 @@ const LookingForDriver = () => {
             <div className="flex items-center gap-4 pb-2">
               <i className="ri-currency-line text-xl text-gray-300"></i>
               <div>
-                <h3 className="text-lg font-medium">₹193.20</h3>
+                <h3 className="text-lg font-medium">₹{rideInfo?.price}</h3>
                 <p className="text-sm text-gray-400"> Cash</p>
               </div>
             </div>
