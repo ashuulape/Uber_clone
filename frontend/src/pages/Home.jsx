@@ -10,6 +10,7 @@ import Cabs from '../Components/Cabs';
 import Confirmedride from '../Components/Confirmedride';
 import LookingForDriver from '../Components/LookingForDriver';
 import WaitForDriver from '../Components/WaithingForDriver';
+import Map from '../Components/Map';
 
 
 const home = () => {
@@ -130,7 +131,7 @@ const handleSuggestionSelect = (location) => {
 useGSAP(()=>{
  if(panelopen){
    gsap.to(panelRef.current,{
-    height:'70%',
+    height:'50%',
     duration:1,
     ease:'power3.out'
   })
@@ -251,6 +252,25 @@ const Findtrip = async() => {
   
 }
 
+const DefaultLocation = async () => {
+  const token = localStorage.getItem('token')
+  if(!token) {
+    alert('Please login to use this feature')
+    return
+  }
+
+await console.log(Location.lat, Location.lng);
+
+  const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/maps/current-location`, {
+    params: {
+      lat: Location.lat,
+      lon: Location.lng
+    },
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  setpickup(response.data.address)
+}
+
 const SelectRideAndConfirm=async (VehicleType) => {
 
 const response=await axios.post(`${import.meta.env.VITE_BASE_URL}/api/rides/create`,{
@@ -274,26 +294,24 @@ console.log(
   return (
     <div className="relative h-screen w-screen overflow-hidden">
      
-        <img 
-        className="absolute invert w-30 z-1"
+        <img  className="absolute  w-30 z-1 right-0"
         src="https://media.ffycdn.net/us/postmates/eyJwYXRoIjoicG9zdG1hdGVzXC9hY2NvdW50c1wvODRcLzQwMDA1MTRcL3Byb2plY3RzXC8zMFwvYXNzZXRzXC84NFwvNTY0OFwvZDgwNzhiNTY5MDgxZGMwMDg2YTA5MzMxODRmNzRjYWYtMTYyMDcxOTg2Ni5wbmcifQ:postmates:8yzkJLajxr6_SqXPeLDmCnbN5hR-5WgmEC3pzohGaAA?width={width}&rect=2.5259622713415,0,797.47403772866,487&reference_width=800"
-        alt=""
-      />
+        alt=""/>
    
-      <div   className="h-screen w-screen"  >
-        <img  className="h-full w-full " src={image} alt="" />
+      <div className="absolute inset-0 z-0">
+        
+        <Map />
       </div>
-      <div className=" flex flex-col justify-end absolute  bottom-0 w-full z-10 h-full pt-4 rounded-2xl ">
+
+
+      <div className="pointer-events-none absolute inset-0 z-10 flex flex-col justify-end pt-4 rounded-2xl ">
         <div
        
-        className="h-fit  bg-black flex flex-col justify-start  rounded-t-3xl pointer-events-auto">
+        className="h-fit  bg-black flex flex-col justify-start  rounded-t-3xl pointer-events-auto ">
            
-          
-
+ 
             <i onClick={()=>{setpanelopen((prev)=>!prev)}} ref={arrow} className="ri-arrow-up-s-line text-white text-center text-3xl p-2"></i>
 
-         
-           
           <h2  className="text-white text-3xl text-center  font-semibold m-2">Find a trip</h2>
          
          <form  onSubmit={(e)=>{submitHandler(e)}} className="h-fit flex flex-col px-4 gap-4 items-center w-full  text-white font-medium relative pb-8">
@@ -308,7 +326,7 @@ console.log(
            </div>
             <div className="flex flex-col gap-4 w-full">
               <input
-              onClick={()=>setpanelopen(true)}
+              onClick={()=>setpanelopen(true) ,DefaultLocation}
               value={pickup}
               onChange={(e) => {
                 setpickup(e.target.value)

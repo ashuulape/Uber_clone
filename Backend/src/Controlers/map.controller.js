@@ -76,4 +76,29 @@ const getSuggestion=async (req,res,next) => {
     }
 }
 
-module.exports={getCoordinates,getDistanceTime,getSuggestion}
+const getCurrentLocation=async (req,res,next) => {
+    const errors=validationResult(req);
+    if(!errors.isEmpty()){
+        return res.status(400).json({errors:errors.array()})
+    }
+
+    const {lat,lon}=req.query
+
+    try {
+          const response=await mapservice.CurrentLocation(lat,lon)
+
+            
+
+            const data=response.results[0].formatted
+        
+          res.status(200).json({address:data})
+
+        
+    } catch (error) {
+        console.log(error);
+        
+        res.status(500).json({message:"internal server error"})
+    }
+}
+
+module.exports={getCoordinates,getDistanceTime,getSuggestion,getCurrentLocation}

@@ -115,5 +115,22 @@ try {
 
 }
 
+const CurrentLocation=async (lat,lon) => {
 
-module.exports={getAddressCoordinate,getDistanceTime,Suggestion}
+    if(!lat || !lon){
+        throw new Error('lat & lon is required')
+    }
+
+    const response = await axios.get(`${url}/v1/geocode/reverse`, {
+        params: {
+            lat,
+            lon,
+            format: 'json',
+            apiKey: goeApikey
+        }
+    });
+
+    return response.data;
+}
+
+module.exports={getAddressCoordinate,getDistanceTime,Suggestion,CurrentLocation  }
