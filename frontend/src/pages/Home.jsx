@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import image from '../assets/map.png'
 import { useGSAP } from "@gsap/react/dist";
@@ -19,7 +19,8 @@ const home = () => {
 
   const [Location, setLocation] = useState({});
 
-      navigator.geolocation.getCurrentPosition(
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
       (position) => {
         setLocation({
           lat: position.coords.latitude,
@@ -31,8 +32,9 @@ const home = () => {
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
+  }, []);
 
-
+const [loading, setLoading] = useState(false)
   const [pickup, setpickup] = useState('')
   const [destination, setdestination] = useState('')
   const [panelopen, setpanelopen] = useState(false)
@@ -226,8 +228,12 @@ useGSAP(()=>{
 
 const Findtrip = async() => {
   
-  
   const token = localStorage.getItem('token')
+  if(pickup && destination){
+    setLoading(true)
+    
+    setpanelopen(false)
+  }
   try {
     console.log(pickup, destination);
     const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/ride/getfare`, {
@@ -242,6 +248,8 @@ const Findtrip = async() => {
     
   } catch (error) {
     console.error('Error fetching fare:', error)
+  }finally {
+    setLoading(false) // stop spinner, whether success or fail
   }
 
 
@@ -294,13 +302,13 @@ console.log(
   return (
     <div className="relative h-screen w-screen overflow-hidden">
      
-        <img  className="absolute  w-30 z-1 right-0"
+        <img  className="absolute  w-30 z-1 left-0"
         src="https://media.ffycdn.net/us/postmates/eyJwYXRoIjoicG9zdG1hdGVzXC9hY2NvdW50c1wvODRcLzQwMDA1MTRcL3Byb2plY3RzXC8zMFwvYXNzZXRzXC84NFwvNTY0OFwvZDgwNzhiNTY5MDgxZGMwMDg2YTA5MzMxODRmNzRjYWYtMTYyMDcxOTg2Ni5wbmcifQ:postmates:8yzkJLajxr6_SqXPeLDmCnbN5hR-5WgmEC3pzohGaAA?width={width}&rect=2.5259622713415,0,797.47403772866,487&reference_width=800"
         alt=""/>
    
       <div className="absolute inset-0 z-0">
         
-        <Map />
+        <Map setLocation={setLocation} location={Location} />
       </div>
 
 
@@ -326,7 +334,7 @@ console.log(
            </div>
             <div className="flex flex-col gap-4 w-full">
               <input
-              onClick={()=>setpanelopen(true) ,DefaultLocation}
+              onClick={()=>{setpanelopen(true); DefaultLocation()}}
               value={pickup}
               onChange={(e) => {
                 setpickup(e.target.value)
@@ -349,7 +357,13 @@ console.log(
             />
             </div>
            </div>
-            <button onClick={Findtrip} className="bg-white text-black w-[80%] text-lg  px-4 py-2 rounded ">Find</button>
+            <button
+              onClick={Findtrip}
+              disabled={loading}
+              className="bg-white text-black w-[80%] text-lg px-4 py-2 rounded flex items-center justify-center"
+            >
+              {loading ? <div className="spinner"></div> : "Find"}
+            </button>
           </form>
         </div>
         <div ref={panelRef} className="bg-black h-0 relative  overflow-y-hidden pointer-events-auto ">
