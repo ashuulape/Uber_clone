@@ -34,16 +34,10 @@ const initializeSocket = (server) => {
     });
 
     socket.on('update-location-captain', async (data) => {
-      const {userId , userType,location}=data
-
-      
-
-      if(userType==='captain'){
+      const {userId ,location}=data
+      console.log(location)
         await captainModel.findByIdAndUpdate(userId,{location})
-      }
-      else if(userType==='user'){
-        await userModel.findByIdAndUpdate(userId,{location})
-      }
+
 
     })
 

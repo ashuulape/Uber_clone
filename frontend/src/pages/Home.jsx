@@ -15,23 +15,16 @@ import { useRideContext } from '../Context/RideContext';
 import { useSocketContext } from '../Context/SocketContext';
 import { userDataContext } from '../Context/UserContext';
 
+
 const home = () => {
 
   gsap.registerPlugin(useGSAP);
 
   const { user } = useContext(userDataContext)
-   const { sendMessage, connected } = useSocketContext()
+   const { sendMessage, connected ,socket } = useSocketContext()
   
-    React.useEffect(() => {
-      if (!connected || !user?._id) return
-  
-      sendMessage('join', {
-        userType: 'user',
-        userId: user._id,
-      })
-
-      
-    }, [connected, sendMessage, user?._id])
+   
+    
 
   const {
     currentLocation,

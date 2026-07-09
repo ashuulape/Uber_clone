@@ -32,12 +32,11 @@ const RideProvider = ({ children }) => {
 
   const confirmRideSelection = async (vehicleType) => {
     const token = localStorage.getItem('token')
+console.log(vehicleType);
 
-    const response = await axios.post(
-      `${import.meta.env.VITE_BASE_URL}/api/ride/create`,
-      {
+    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/ride/create`,{
         origin: pickup,
-        destination,
+        destination:destination,
         vehicleType,
       },
       {

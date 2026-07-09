@@ -8,9 +8,13 @@ import gsap from 'gsap'
 import Map from '../Components/Map'
 import { captainDataContext } from '../Context/CaptainContext'
 import { useSocketContext } from '../Context/SocketContext'
+import { Socket } from 'socket.io-client'
+import axios from 'axios'
 
 
 const CpatainHome = () => {
+
+  const [Ride, setRide] = useState({})
  
   
   const { captain } = useContext(captainDataContext)
@@ -18,7 +22,11 @@ const CpatainHome = () => {
  
 
 
-    const { sendMessage, connected,socket } = useSocketContext()
+    const { sendMessage, connected, receiveMessage } = useSocketContext()
+    const [showRide,setShowRide] = useState(false)
+    const [confirmShowRide, setConfirmShowRide] = useState(false)
+  const RidePopUpRef = useRef(null)
+  const ConfirmPopUpRef = useRef(null)
      
 
     
@@ -51,12 +59,18 @@ const CpatainHome = () => {
        
      }, [connected, sendMessage, captain?._id])
 
+     useEffect(() => {
+      const unsubscribe = receiveMessage('new-ride', (data) => {
+        console.log('New ride request:', data);
+        setRide(data)
+        setShowRide(true)
+      });
+    
+      return () => unsubscribe?.();
+    }, [receiveMessage]);
+
   
 
-  const [showRide,setShowRide] = useState(false)
-  const [confirmShowRide, setConfirmShowRide] = useState(false)
-const RidePopUpRef = useRef(null)
-const ConfirmPopUpRef = useRef(null)
   
 
   
@@ -95,6 +109,11 @@ useGSAP(()=>{
   }
  },[confirmShowRide])
 
+ const ConfirmRide=async () => {
+
+  const response=await axios.post(`${import.meta.env.BASE_URL}/api/ride/confirm`,{})
+ }
+
 
 
   return (
@@ -127,7 +146,7 @@ useGSAP(()=>{
         </div>
 
         <div ref={RidePopUpRef} className='pointer-events-auto absolute inset-x-0 bottom-0 z-30 translate-y-full'>
-          <RidePopUP setShowRide={setShowRide} setConfirmShowRide={setConfirmShowRide} />
+          <RidePopUP Ride={Ride} setShowRide={setShowRide} setConfirmShowRide={setConfirmShowRide} ConfirmRide={ConfirmRide} />
         </div>
         <div ref={ConfirmPopUpRef} className='pointer-events-auto absolute inset-x-0 bottom-0 z-40 translate-y-full'>
           <ConfirmRidePopUP setConfirmShowRide={setConfirmShowRide} />

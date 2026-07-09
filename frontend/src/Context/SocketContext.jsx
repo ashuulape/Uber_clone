@@ -40,7 +40,7 @@ const SocketProvider = ({ children }) => {
   }, []);
 
   const sendMessage = (eventName, payload) => {
-    console.log('sendMessage called with:', eventName, payload);
+    
     if (!socket) {
       console.log('Socket not ready');
       return false;

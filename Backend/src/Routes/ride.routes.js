@@ -17,9 +17,15 @@ fareValidation=[
     query('destination').notEmpty().withMessage('Dropoff location is required')
 ]
 
+confirmValidation=[
+    body('rideId').isMongoId().withMessage('Invalid Id'),
+    
+]
+
 
 router.post('/create', authMiddleware.authUsers, rideValidation,rideController.createRide); 
 router.get('/getfare', authMiddleware.authUsers, fareValidation, rideController.getFair);
+router.post('/confirm', authMiddleware.authCaptain, rideController.confirmRide);
 
 
 
