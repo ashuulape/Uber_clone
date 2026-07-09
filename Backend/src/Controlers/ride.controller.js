@@ -14,7 +14,7 @@ const createRide = async (req, res) => {
         return res.status(400).json({validation: 'error' , errors: errors.array()});
     }
 
-    const { origin, destination, vehicleType} = req.body;
+    const { origin, destination, vehicleType } = req.body;
 
     try {
         const ride = await rideService.createRide({ 
@@ -35,7 +35,6 @@ const createRide = async (req, res) => {
        const rideWithUer= await RideModel.findOne({_id:ride._id}).populate('user')
         ride.OTP=''
 
-        console.log('captains in radius:', captainInRadius.map(c => ({ id: c._id, socketId: c.socketId })));
        captainInRadius.map(captain=>{
         
         sendMessageToSocketId(captain.socketId, 'new-ride', rideWithUer);
@@ -73,15 +72,17 @@ const confirmRide = async (req, res) => {
         return res.status(400).json({ errors: errors.array() });
     }
 
-    const { rideId } = req.body;
+    const { rideId ,captainId } = req.body;
+    console.log(req.body)
 
     try {
-        const ride = await rideService.confirmRide({ rideId, captain: req.captain });
+        const ride = await rideService.confirmRide({ rideId, captain: req.captain});
+        console.log("Bckendride:",ride);
 
-        sendMessageToSocketId(ride.user.socketId, {
-            event: 'ride-confirmed',
-            data: ride
-        })
+        const rideObj = ride.toObject();
+if (rideObj.captain) delete rideObj.captain.password;
+        
+        sendMessageToSocketId(ride.user.socketId, 'ride-confirmed', rideObj);
 
         return res.status(200).json(ride);
     } catch (err) {

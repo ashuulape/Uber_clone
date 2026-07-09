@@ -17,12 +17,12 @@ const CpatainHome = () => {
   const [Ride, setRide] = useState({})
  
   
-  const { captain } = useContext(captainDataContext)
+  const { captain , CaptainLiveLoaction } = useContext(captainDataContext)
   const captainName = [captain?.fullname?.firstname, captain?.fullname?.lastname].filter(Boolean).join(' ') || 'Captain'
  
 
 
-    const { sendMessage, connected, receiveMessage } = useSocketContext()
+    const { socket  } = useSocketContext()
     const [showRide,setShowRide] = useState(false)
     const [confirmShowRide, setConfirmShowRide] = useState(false)
   const RidePopUpRef = useRef(null)
@@ -32,9 +32,9 @@ const CpatainHome = () => {
     
    
      React.useEffect(() => {
-       if (!connected || !captain?._id) return
+       if (!socket || !captain?._id) return
         
-       sendMessage('join', {
+       socket.emit('join', {
          userType: 'captain',
          userId: captain._id,
        })
@@ -43,7 +43,7 @@ const CpatainHome = () => {
          if (navigator.geolocation) {
            navigator.geolocation.getCurrentPosition((position) => {
              const { latitude, longitude } = position.coords
-             sendMessage('update-location-captain', {
+             socket.emit('update-location-captain', {
                userId: captain._id,
                userType: 'captain',
                location: {
@@ -52,22 +52,22 @@ const CpatainHome = () => {
                }
              })
            })
-         }
+         } 
        }, 10000)
 
        return () => clearInterval(locationInterval)
        
-     }, [connected, sendMessage, captain?._id])
+     }, [ socket, captain?._id])
 
      useEffect(() => {
-      const unsubscribe = receiveMessage('new-ride', (data) => {
+      const unsubscribe = socket.on('new-ride', (data) => {
         console.log('New ride request:', data);
         setRide(data)
         setShowRide(true)
       });
     
       return () => unsubscribe?.();
-    }, [receiveMessage]);
+    }, [socket]);
 
   
 
@@ -111,7 +111,34 @@ useGSAP(()=>{
 
  const ConfirmRide=async () => {
 
-  const response=await axios.post(`${import.meta.env.BASE_URL}/api/ride/confirm`,{})
+  const response=await axios.post(`${import.meta.env.VITE_BASE_URL}/api/ride/confirm`,{
+       rideId: Ride._id,
+            captainId: captain._id,
+  },{
+    headers:{
+                      Authorization: `Bearer ${localStorage.getItem('token')}`
+    }
+  })
+    setShowRide(false)
+        setConfirmShowRide(true)
+
+ }
+
+const [DistaceTime, setDistaceTime] = useState({})
+ const DistanceTwoPoints=async(origin,destination)=>{
+
+  const responce=axios.get(`${import.meta.env.VITE_BASE_URL}/api/maps/get-distance-time`,{
+    params:{
+      origin:origin,
+      destination:destination
+    },
+    headers:{
+                      Authorization: `Bearer ${localStorage.getItem('token')}`
+    }
+  })
+
+  return responce.data
+
  }
 
 
@@ -136,7 +163,7 @@ useGSAP(()=>{
 
         {/* Map Background */}
         <div className='h-full w-full overflow-hidden absolute top-0 left-0 z-0'>
-           <Map/>
+           <Map LiveLocation={CaptainLiveLoaction}/>
         </div>
 
         {/* Bottom Details Panel */}
@@ -146,10 +173,10 @@ useGSAP(()=>{
         </div>
 
         <div ref={RidePopUpRef} className='pointer-events-auto absolute inset-x-0 bottom-0 z-30 translate-y-full'>
-          <RidePopUP Ride={Ride} setShowRide={setShowRide} setConfirmShowRide={setConfirmShowRide} ConfirmRide={ConfirmRide} />
+          <RidePopUP Ride={Ride} setShowRide={setShowRide} setConfirmShowRide={setConfirmShowRide} ConfirmRide={ConfirmRide} DistaceTime={DistaceTime} setDistaceTime={setDistaceTime} DistanceTwoPoints={DistanceTwoPoints} CaptainLiveLoaction={CaptainLiveLoaction}  />
         </div>
         <div ref={ConfirmPopUpRef} className='pointer-events-auto absolute inset-x-0 bottom-0 z-40 translate-y-full'>
-          <ConfirmRidePopUP setConfirmShowRide={setConfirmShowRide} />
+          <ConfirmRidePopUP Ride={Ride} setConfirmShowRide={setConfirmShowRide} />
         </div>
       </div>
     </div>

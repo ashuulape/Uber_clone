@@ -56,7 +56,7 @@ const createRide=async ({userId, origin, destination,vehicleType}) => {
 
     const fair=await getFare(origin,destination)
 
-  console.log('fair:', fair);
+
   
 
     const ride= await rideModel.create({
@@ -73,7 +73,7 @@ const createRide=async ({userId, origin, destination,vehicleType}) => {
 };
 
 const confirmRide =async ({rideId, captain}) => {
-    if (!rideId) {
+  try  {if (!rideId) {
         throw new Error('Ride id is required');
     }
 
@@ -86,13 +86,19 @@ const confirmRide =async ({rideId, captain}) => {
 
     const ride = await rideModel.findOne({
         _id: rideId
-    }).populate('user').populate('captain').select('+otp');
+    }).populate('user').populate('captain').select('+OTP');
 
     if (!ride) {
         throw new Error('Ride not found');
     }
 
-    return ride;
+    console.log('ride:'+ ride)
+
+    return ride;}
+    catch (error) {
+
+        console.error(error)
+    }
 }
 
 module.exports={

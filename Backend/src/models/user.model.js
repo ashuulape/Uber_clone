@@ -32,6 +32,16 @@ const userSchema=new mongoose.Schema({
         type:String,
 
     },
+      location:{ 
+        lat:{
+            type:Number
+          
+        },
+        lng:{
+            type:Number
+            
+        }
+    } 
     
 })
 

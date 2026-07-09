@@ -20,10 +20,11 @@ const home = () => {
 
   gsap.registerPlugin(useGSAP);
 
-  const { user } = useContext(userDataContext)
-   const { sendMessage, connected ,socket } = useSocketContext()
+  const { user ,userLiveLocation } = useContext(userDataContext)
+   const { socket } = useSocketContext()
   
    
+    
     
 
   const {
@@ -61,7 +62,50 @@ const home = () => {
     setRouteData
   } = useRideContext()
 
+   
+
   
+  useEffect(() => {
+    if (socket && user) {
+      socket.emit('join', { userType: 'user', userId: user._id });
+    }
+
+    const locationInterval = setInterval(() => {
+         if (navigator.geolocation) {
+           navigator.geolocation.getCurrentPosition((position) => {
+             const { latitude, longitude } = position.coords
+             socket.emit('update-location-user', {
+               userId: user._id,
+               userType: 'user',
+               location: {
+                 lat:latitude,
+                 lng:longitude
+               }
+             })
+           })
+         } 
+       }, 10000)
+
+       return () => clearInterval(locationInterval)
+       
+  }, [socket]);
+
+  useEffect(() => {
+    if (!socket) return;
+    
+    const handleRideConfirmed = (ride) => {
+      console.log("ride", ride);
+      setLookingPanel(false);
+      setWaitingForDriverPanel(true);
+      setRideInfo(ride);
+    };
+
+    socket.on('ride-confirmed', handleRideConfirmed);
+
+    return () => {
+      socket.off('ride-confirmed', handleRideConfirmed);
+    };
+  }, [socket, setLookingPanel, setWaitingForDriverPanel, setRideInfo]);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -146,7 +190,7 @@ const debouncedFetchSuggestions = (value, field) => {
 
   debounceTimerRef.current = setTimeout(() => {
     fetchSuggestions(value, field)
-  }, 1000)
+  }, 500)
 }
 
 const handleSuggestionSelect = (location) => {
@@ -262,15 +306,12 @@ const Findtrip = async() => {
   
   const token = localStorage.getItem('token')
 
-  if (!connected || !user?._id) {
+  if (!socket || !user?._id) {
     console.warn('Socket is not ready yet')
     return
   }
 
-  sendMessage('join', {
-    userType: 'user',
-    userId: user._id,
-  })
+
 
   if(pickup && destination){
     setLoading(true)
@@ -303,6 +344,8 @@ const Findtrip = async() => {
   
 }
 
+
+
 const DefaultLocation = async () => {
   const token = localStorage.getItem('token')
   if(!token) {
@@ -331,7 +374,7 @@ const DefaultLocation = async () => {
    
       <div className="absolute inset-0 z-0">
         
-        <Map />
+        <Map LiveLocation={userLiveLocation} />
       </div>
 
 

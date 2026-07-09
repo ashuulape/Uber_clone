@@ -1,71 +1,36 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 
 const SocketContext = createContext(null);
 
 export const useSocketContext = () => {
   const context = useContext(SocketContext);
-
   if (!context) {
     throw new Error('useSocketContext must be used inside a SocketProvider');
   }
-
   return context;
 };
 
 const SocketProvider = ({ children }) => {
-  const [socket, setSocket] = useState(null);
-  const [connected, setConnected] = useState(false);
-
-  useEffect(() => {
-    const clientSocket = io(import.meta.env.VITE_BASE_URL || 'http://localhost:3000', {
+  const socketRef = useRef(null);
+  if (!socketRef.current) {
+    socketRef.current = io(import.meta.env.VITE_BASE_URL || 'http://localhost:3000', {
       transports: ['websocket', 'polling'],
     });
+  }
+  const socket = socketRef.current;
 
-    clientSocket.on('connect', () => {
-      setConnected(true);
-      console.log('Connected to server:', clientSocket.id);
-    });
-
-    clientSocket.on('disconnect', () => {
-      setConnected(false);
-      console.log('Disconnected from server');
-    });
-
-    setSocket(clientSocket);
+  useEffect(() => {
+    socket.on('connect', () => console.log('Connected to server:', socket.id));
+    socket.on('disconnect', () => console.log('Disconnected from server'));
 
     return () => {
-      clientSocket.disconnect();
+      socket.off('connect');
+      socket.off('disconnect');
     };
-  }, []);
+  }, [socket]);
 
-  const sendMessage = (eventName, payload) => {
-    
-    if (!socket) {
-      console.log('Socket not ready');
-      return false;
-    }
-    socket.emit(eventName, payload);
-    return true;
-  };
- 
-
-  const receiveMessage = (eventName, callback) => {
-    if (!socket) return undefined;
-
-    socket.on(eventName, callback);
-    return () => socket.off(eventName, callback);
-  };
-
-  const value = useMemo(
-    () => ({
-      socket,
-      connected,
-      sendMessage,
-      receiveMessage,
-    }),
-    [socket, connected]
-  );
+  const value = useMemo(() => ({ socket }), [socket]);
 
   return <SocketContext.Provider value={value}>{children}</SocketContext.Provider>;
 };

@@ -38,7 +38,7 @@ console.log(vehicleType);
         origin: pickup,
         destination:destination,
         vehicleType,
-      },
+      }, 
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -49,7 +49,7 @@ console.log(vehicleType);
     return response.data
   }
 
-  const fetchAndDrawRoute = async (origin, destination) => {
+  const fetchAndDrawRoute = async (origin, destination ) => {
     if (!origin?.trim() || !destination?.trim()) return null
 
     const token = localStorage.getItem('token')

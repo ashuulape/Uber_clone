@@ -9,15 +9,15 @@ import RideProvider from './Context/RideContext.jsx'
 import SocketProvider from './Context/SocketContext.jsx'
 
 createRoot(document.getElementById('root')).render(
+        <SocketProvider>
 <CaptainContext>
     <UserContext>
       <RideProvider>
-        <SocketProvider>
           <BrowserRouter>
             <App />
           </BrowserRouter>
-        </SocketProvider>
       </RideProvider>
     </UserContext>
 </CaptainContext>
+        </SocketProvider>
 )

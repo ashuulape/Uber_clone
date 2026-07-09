@@ -25,7 +25,7 @@ confirmValidation=[
 
 router.post('/create', authMiddleware.authUsers, rideValidation,rideController.createRide); 
 router.get('/getfare', authMiddleware.authUsers, fareValidation, rideController.getFair);
-router.post('/confirm', authMiddleware.authCaptain, rideController.confirmRide);
+router.post('/confirm', authMiddleware.authCaptain,confirmValidation, rideController.confirmRide);
 
 
 

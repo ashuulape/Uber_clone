@@ -6,7 +6,7 @@ import L from 'leaflet'
 import userIconURL from '../assets/mask.png'
 import destinationIconURL from '../assets/destinations.png'
 
-const Map = () => {
+const Map = (props) => {
 
 const userIcon = L.icon({
   iconUrl: userIconURL,
@@ -22,7 +22,7 @@ const destinationIcon = L.icon({
   className: "invert"     // popup position
 });
 
-  const { currentLocation, setCurrentLocation, routeData } = useRideContext()
+  const { routeData } = useRideContext() || props?.routeData
 
 
   const collectRoutePoints = (value) => {
@@ -77,24 +77,9 @@ const destinationIcon = L.icon({
   const originPoint = hasRouteCoordinates ? routeCoordinates[0] : null
   const destinationPoint = hasRouteCoordinates ? routeCoordinates[routeCoordinates.length - 1] : null
 
-  useEffect(() => {
-    if (currentLocation?.lat && currentLocation?.lng) return
+  
 
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setCurrentLocation?.({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        })
-      },
-      (error) => {
-        console.error('Error getting location:', error)
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-    )
-  }, [currentLocation, setCurrentLocation])
-
-  if (!currentLocation?.lat || !currentLocation?.lng) return (
+  if (!props?.LiveLocation?.lat || !props?.LiveLocation?.lng) return (
   <div className="h-full w-full flex items-center justify-center">
     <h1 className='text-center text-black/50 font-bold'>Loading map...</h1>
     </div>
@@ -103,7 +88,7 @@ const destinationIcon = L.icon({
   return (
     <div className="h-full w-full pointer-events-auto">
       <MapContainer
-        center={[currentLocation.lat, currentLocation.lng]}
+        center={[props?.LiveLocation.lat, props?.LiveLocation.lng]}
         zoom={12}
         className="h-full w-full"
         style={{ height: '100%', width: '100%' }}
@@ -133,7 +118,7 @@ const destinationIcon = L.icon({
             <GeoJSON data={safeRouteData} style={{ color: '#D1FF00', weight: 4 }} />
           </>
         ) : (
-          <Marker position={[currentLocation.lat, currentLocation.lng]} icon={userIcon} />
+          <Marker position={[props?.LiveLocation?.lat, props?.LiveLocation?.lng]} icon={userIcon} />
         )}
 
       </MapContainer>

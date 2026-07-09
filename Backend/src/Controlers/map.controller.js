@@ -36,6 +36,9 @@ const getDistanceTime=async (req,res,next) => {
     
     const {origin,destination}=req.query
 
+
+    
+
     try {
           const data=await mapservice.getDistanceTime(origin,destination)
 

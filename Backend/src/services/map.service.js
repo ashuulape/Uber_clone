@@ -47,7 +47,8 @@ const getAddressCoordinate = async (address) => {
 
 
 
-const getDistanceTime=async(origin,destination)=>{
+const getDistanceTime=async(origin,destination,)=>{
+    // console.log(origin,coods);
     
      if (!origin || !destination) {
         throw new Error('origin & distance is required');
@@ -57,8 +58,8 @@ const getDistanceTime=async(origin,destination)=>{
    const originCoords= await getAddressCoordinate(origin)
    const destinationCoords=await getAddressCoordinate(destination)
 
-   const originLonLat=`${originCoords[0].lat},${originCoords[0].lon}`
-   const destinationLonLat=`${destinationCoords[0].lat},${destinationCoords[0].lon}`
+   const originLonLat=`${originCoords[0].lat},${originCoords[0].lon }`
+   const destinationLonLat=`${destinationCoords[0].lat},${destinationCoords[0].lon }`
 
   
    
@@ -135,7 +136,7 @@ const CurrentLocation=async (lat,lon) => {
 }
  
 const getCaptainsInTheRadius=async (lat,lng ,radius) => {
-    console.log(lat,lng);
+    
     
     const captains =await captainModel.find({
 

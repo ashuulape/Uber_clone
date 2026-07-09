@@ -20,6 +20,6 @@ router.get('/get-distance-time',validateGetDistanceTime,authmiddleware.authUsers
 
 router.get('/get-suggestion',validateGetCoordinates,authmiddleware.authUsers,mapController.getSuggestion)
 
-router.get('/current-location',validatecurrentLocation,authmiddleware.authUsers,mapController.getCurrentLocation)
+router.get('/current-location',validatecurrentLocation,mapController.getCurrentLocation)
 
 module.exports=router

@@ -13,7 +13,7 @@ const initializeSocket = (server) => {
   });
 
   io.on('connection', (socket) => {
-    console.log('Socket connected:',socket);
+   
 
     socket.on('join', async (data) => {
       console.log('join event received', data);
@@ -35,8 +35,15 @@ const initializeSocket = (server) => {
 
     socket.on('update-location-captain', async (data) => {
       const {userId ,location}=data
-      console.log(location)
+      
         await captainModel.findByIdAndUpdate(userId,{location})
+
+
+    })
+    socket.on('update-location-user', async (data) => {
+      const {userId ,location}=data
+      
+        await userModel.findByIdAndUpdate(userId,{location})
 
 
     })
