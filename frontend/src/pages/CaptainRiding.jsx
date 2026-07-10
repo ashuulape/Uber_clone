@@ -1,15 +1,23 @@
-import React, { useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useContext, useEffect, useRef, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import image from '../assets/map.png'
 import { useGSAP } from '@gsap/react/dist'
 import gsap from 'gsap'
+import { useRideContext } from '../Context/RideContext'
+import { captainDataContext } from '../Context/CaptainContext'
+import Map from '../Components/Map'
+
 
 const FinishRidePanel = (props) => {
+   
+
+
+
     return (
         <div className='bg-black text-white px-4 font-sans w-full flex flex-col items-center rounded-t-3xl pb-8 shadow-[0_-10px_20px_rgba(0,0,0,0.5)]'>
             <div onClick={() => props.setFinishRidePanel(false)} className="w-[15%] h-1.5 bg-gray-600 rounded-full mx-auto mb-4 mt-5 cursor-pointer"></div>
 
-            <h1 className="text-start text-2xl font-semibold w-full mb-6">Finish this Ride</h1>
+            <h1 className="text-start text-2xl font-semibold w-full  mb-6">Finish this Ride</h1>
 
             {/* Rider card */}
             <div className='flex items-center justify-between w-full bg-gray-900 rounded-2xl p-4 shadow-lg mb-6'>
@@ -64,6 +72,21 @@ const FinishRidePanel = (props) => {
 }
 
 const CaptainRiding = () => {
+ const {Ride,CaptainLiveLoaction } = useContext(captainDataContext)
+
+     const navigate=useNavigate()
+     
+    console.log(Ride);
+
+    useEffect(() => {
+        if(Ride===undefined){
+            navigate('/captainhome')
+        }  
+      
+    }, [Ride])
+    
+
+
     const [finishRidePanel, setFinishRidePanel] = useState(false)
     const finishRidePanelRef = useRef(null)
 
@@ -98,7 +121,7 @@ const CaptainRiding = () => {
 
             {/* Map */}
             <div className='h-4/5 w-full overflow-hidden'>
-                <img className='h-full w-full object-cover' src={image} alt="Map" />
+              <Map LiveLocation={CaptainLiveLoaction} />
             </div>
 
             {/* Bottom strip */}
@@ -106,10 +129,10 @@ const CaptainRiding = () => {
                 <div className='flex flex-col'>
                     <div className='flex items-center gap-2 text-gray-400 text-sm mb-1'>
                         <i className="ri-map-pin-fill text-white text-base"></i>
-                        <span>Third Wave Coffee</span>
+                        <span></span>
                     </div>
-                    <h2 className='text-white text-2xl font-bold'>1.2 KM <span className='text-gray-400 text-base font-normal'>away</span></h2>
-                    <p className='text-gray-500 text-sm'>~4 min to destination</p>
+                    <h2 className='text-white text-2xl font-bold'>{Ride?.distance} KM <span className='text-gray-400 text-base font-normal'>away</span></h2>
+                    <p className='text-gray-500 text-sm'>~{Ride?.duration} min to destination</p>
                 </div>
 
                 <button

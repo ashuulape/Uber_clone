@@ -22,6 +22,11 @@ confirmValidation=[
     
 ]
 
+startRideValidation=[
+     query('rideId').isMongoId().withMessage('Invalid ride id'),
+    query('OTP').isString().isLength({ min: 6, max: 6 }).withMessage('Invalid OTP'),]
+
+router.get('/start-ride',authMiddleware.authCaptain,startRideValidation, rideController.startRide)
 
 router.post('/create', authMiddleware.authUsers, rideValidation,rideController.createRide); 
 router.get('/getfare', authMiddleware.authUsers, fareValidation, rideController.getFair);

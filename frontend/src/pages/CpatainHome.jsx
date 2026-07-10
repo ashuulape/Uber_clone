@@ -14,10 +14,10 @@ import axios from 'axios'
 
 const CpatainHome = () => {
 
-  const [Ride, setRide] = useState({})
+  
  
   
-  const { captain , CaptainLiveLoaction } = useContext(captainDataContext)
+  const { captain , CaptainLiveLoaction,setRide ,Ride } = useContext(captainDataContext)
   const captainName = [captain?.fullname?.firstname, captain?.fullname?.lastname].filter(Boolean).join(' ') || 'Captain'
  
 
@@ -59,15 +59,13 @@ const CpatainHome = () => {
        
      }, [ socket, captain?._id])
 
-     useEffect(() => {
-      const unsubscribe = socket.on('new-ride', (data) => {
+     socket.on('new-ride', (data) => {
         console.log('New ride request:', data);
         setRide(data)
         setShowRide(true)
       });
     
-      return () => unsubscribe?.();
-    }, [socket]);
+    
 
   
 
@@ -144,7 +142,7 @@ const [DistaceTime, setDistaceTime] = useState({})
 
 
   return (
-    <div className='h-screen bg-black overflow-hidden relative'>
+    <div className='h-screen bg-black/40 overflow-hidden relative'>
         {/* Top Navbar */}
         <div className='fixed p-4 top-0 flex items-center justify-between w-full z-10'>
             <div className='w-12 h-12 bg-black backdrop-blur-md flex items-center justify-center rounded-full border border-white/30 text-white shadow-lg active:scale-95 transition-transform'>

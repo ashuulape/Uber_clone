@@ -1,11 +1,31 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 const ConfirmRidePopUP = (props) => {
     const [otp, setOtp] = useState('')
+    console.log(props?.Ride?._id);
+    const navigate=useNavigate()
+    
 
-    const submitHandler = (e) => {
+    const submitHandler = async(e) => {
         e.preventDefault()
+        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/ride/start-ride`,{
+            params:{
+                OTP:otp,
+                rideId:props?.Ride?._id
+            },
+            headers:{
+                Authorization:`Bearer ${localStorage.getItem('token')}`
+            }
+
+        }
+    )
+    if(res.status===200){
+            props.setConfirmShowRide(false)
+            navigate('/captain/riding')
+    }
     }
 
   return (
@@ -76,9 +96,9 @@ const ConfirmRidePopUP = (props) => {
                     className='w-full bg-gray-900 border border-gray-700 px-4 py-3 text-lg rounded-xl text-white outline-none focus:border-green-500 font-mono tracking-widest text-center' 
                 />
                 
-                <Link to='/captain/riding' className="w-full flex items-center justify-center bg-white text-black font-bold text-lg py-3 rounded-xl active:bg-white transition-colors">
+                <button className="w-full flex items-center justify-center bg-white text-black font-bold text-lg py-3 rounded-xl active:bg-white transition-colors">
                     Confirm
-                </Link>
+                </button>
                 
                 <button type="button" onClick={() => {
                     if (props.setConfirmShowRide) props.setConfirmShowRide(false)

@@ -14,6 +14,7 @@ import Map from '../Components/Map';
 import { useRideContext } from '../Context/RideContext';
 import { useSocketContext } from '../Context/SocketContext';
 import { userDataContext } from '../Context/UserContext';
+import {useNavigate} from 'react-router-dom'
 
 
 const home = () => {
@@ -22,7 +23,7 @@ const home = () => {
 
   const { user ,userLiveLocation } = useContext(userDataContext)
    const { socket } = useSocketContext()
-  
+  const navigate=useNavigate()
    
     
     
@@ -106,6 +107,14 @@ const home = () => {
       socket.off('ride-confirmed', handleRideConfirmed);
     };
   }, [socket, setLookingPanel, setWaitingForDriverPanel, setRideInfo]);
+
+
+  socket.on('ride-started',ride=>{
+    setWaitingForDriverPanel(false)
+    navigate('/riding')
+  })
+
+
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(

@@ -92,5 +92,32 @@ if (rideObj.captain) delete rideObj.captain.password;
     }
 }
 
-module.exports={createRide, getFair ,confirmRide}
+const startRide=async (req,res) => {
+    
+const error=validationResult(req)
+if(!error.isEmpty()){
+     return res.status(400).json({ errors: errors.array() });
+}
+
+const {rideId,OTP}=req.query
+
+ try {
+        const ride = await rideService.startRide({ rideId,OTP, captain: req.captain});
+        
+        
+        sendMessageToSocketId(ride.user.socketId, 'ride-started', ride);
+
+        return res.status(200).json(ride);
+    } catch (err) {
+
+        console.log(err);
+        return res.status(500).json({ message: err.message });
+    }
+
+
+    
+
+}
+
+module.exports={createRide, getFair ,confirmRide,startRide}
 

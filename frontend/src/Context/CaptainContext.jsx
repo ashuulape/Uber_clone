@@ -3,6 +3,7 @@ import React, { createContext, useState ,useEffect } from 'react'
 export const captainDataContext = createContext()
 
 const CaptainContext = ({ children }) => {
+  const [Ride, setRide] = useState()
     const [CaptainLiveLoaction, setCaptainLiveLoaction] = useState({})
     const [captain, setCaptain] = useState({
         email: "",
@@ -38,7 +39,7 @@ const CaptainContext = ({ children }) => {
     
 
     return (
-        <captainDataContext.Provider value={{ captain, setCaptain, CaptainLiveLoaction }}>
+        <captainDataContext.Provider value={{ captain, setCaptain, CaptainLiveLoaction ,setRide ,Ride }}>
             {children}
         </captainDataContext.Provider>
     )

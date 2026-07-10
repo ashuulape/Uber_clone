@@ -1,9 +1,45 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useContext, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import image from '../assets/map.png'
 import car from '../assets/car.png'
+import auto from '../assets/auto.png'
+import bike from '../assets/bike.png'
+
+import { useRideContext } from '../Context/RideContext'
+import { userDataContext } from '../Context/UserContext';
+import Map from '../Components/Map'
+
 
 const Riding = () => {
+
+  const navigate=useNavigate()
+  const {rideInfo}=useRideContext()
+
+
+  const{userLiveLocation}=useContext(userDataContext)
+  const vehicleType=rideInfo?.captain?.vehicle?.vehicleType
+
+    const VehicleImage = () => {
+      if (vehicleType == 'car') {
+        return car;
+      } else if (vehicleType == 'auto') {
+        return auto;
+      } else {
+        return bike;
+      }
+    };
+
+   
+   useEffect(() => {
+     
+     if(rideInfo==undefined){
+       navigate('/home')
+     }
+   
+    
+   }, [rideInfo])
+ 
+  
   return (
     <div className='h-screen bg-black overflow-hidden'>
           {/* Home Button Overlay */}
@@ -12,23 +48,23 @@ const Riding = () => {
           </Link>
 
           {/* Map Top Half */}
-          <div className='h-1/2 w-full overflow-hidden'  >
-                <img className='h-full w-full object-cover'  src={image} alt="Map" />
+          <div className='h-3/5 w-full overflow-hidden'  >
+                <Map LiveLocation={userLiveLocation} />
           </div>
 
           {/* Ride Details Bottom Half */}
-          <div className='h-1/2 bg-black px-4 py-6 text-white flex flex-col justify-between'>
+          <div className='h-2/5 bg-black px-4 py-6 text-white flex flex-col justify-between'>
             
             {/* Driver info & Vehicle image */}
             <div className="flex items-center justify-between w-full px-2">
               <div className="flex flex-col items-center relative h-20 w-32 justify-center">
-                 <img className="h-[140%] object-cover absolute top-[-20%] z-10" src={car} alt="Vehicle" />
+                 <img className="h-[140%] object-cover absolute top-[-20%] z-10" src={VehicleImage()} alt="Vehicle" />
               </div>
   
               <div className="flex flex-col text-right">
-                <h2 className="text-gray-400 font-semibold text-lg">Sarthak</h2>
-                <h3 className="text-2xl font-bold text-white">MP04 AB 1234</h3>
-                <p className="text-sm text-gray-500">Maruti Suzuki Alto</p>
+                <h2 className="text-gray-400 font-semibold text-lg">{rideInfo?.captain?.fullname?.firstname}</h2>
+                <h3 className="text-2xl font-bold text-white">{rideInfo?.captain?.vehicle?.plate}</h3>
+                <p className="text-sm text-gray-500">{rideInfo?.captain?.vehicle?.vehicleType}</p>
               </div>
             </div>
   
@@ -38,8 +74,8 @@ const Riding = () => {
               <div className="flex items-center gap-4 border-b border-gray-700 pb-4">
                 <i className="ri-map-pin-fill text-xl text-gray-300"></i>
                 <div>
-                  <h3 className="text-lg font-medium">Third Wave Coffee</h3>
-                  <p className="text-sm text-gray-400 line-clamp-2">17th Cross Rd, PWD Quarters, 1st Sector, HSR Layout, Bengaluru, Karnataka</p>
+                  <h3 className="text-lg font-medium">Deatination</h3>
+                  <p className="text-sm text-gray-400 line-clamp-2">{rideInfo?.destination}</p>
                 </div>
               </div>
       
@@ -47,7 +83,7 @@ const Riding = () => {
               <div className="flex items-center gap-4 pb-2">
                 <i className="ri-currency-line text-xl text-gray-300"></i>
                 <div>
-                  <h3 className="text-lg font-medium">₹193.20</h3>
+                  <h3 className="text-lg font-medium">₹ {rideInfo?.fare}</h3>
                   <p className="text-sm text-gray-400"> Cash</p>
                 </div>
               </div>
