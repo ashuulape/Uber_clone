@@ -18,6 +18,8 @@ app.use(cors({
     credentials: true
 }));
 
+
+
 app.use('/api/auth',authRoutes)
 app.use('/api/captain',captainRoutes)
 app.use('/api/maps',mapRoutes)

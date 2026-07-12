@@ -30,7 +30,7 @@ const createRide = async (req, res) => {
        
         
         
-        const captainInRadius=await mapService.getCaptainsInTheRadius(pickupcoordinate[0].lat,pickupcoordinate[0].lon,2)
+        const captainInRadius=await mapService.getCaptainsInTheRadius(pickupcoordinate[0].lat,pickupcoordinate[0].lon,10)
        
        const rideWithUer= await RideModel.findOne({_id:ride._id}).populate('user')
         ride.OTP=''

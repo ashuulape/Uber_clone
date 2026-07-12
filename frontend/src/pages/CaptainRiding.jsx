@@ -119,7 +119,7 @@ const CaptainRiding = () => {
                 </div>
             </div>
 
-            {/* Map */}
+            {/* Map */} 
             <div className='h-4/5 w-full overflow-hidden'>
               <Map LiveLocation={CaptainLiveLoaction} />
             </div>

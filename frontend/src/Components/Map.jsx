@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import { MapContainer, TileLayer, Marker, GeoJSON } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
-import { useRideContext } from '../Context/RideContext'
 import L from 'leaflet'
 import userIconURL from '../assets/mask.png'
 import destinationIconURL from '../assets/destinations.png'
@@ -22,9 +21,8 @@ const destinationIcon = L.icon({
   className: "invert"     // popup position
 });
 
-  const { routeData } = useRideContext() || props?.routeData
-
-
+  const  routeData  = props?.routeData
+  
   const collectRoutePoints = (value) => {
     if (!Array.isArray(value)) return []
     if (value.length === 0) return []
@@ -96,8 +94,8 @@ const destinationIcon = L.icon({
         scrollWheelZoom={true}
       >
         <TileLayer
-          url={`https://maps.geoapify.com/v1/tile/dark-matter-brown/{z}/{x}/{y}.png?apiKey=7667017314a245bf853910009f4771ac`}
-          maxZoom={20}
+          url={`https://maps.geoapify.com/v1/tile/dark-matter-brown/{z}/{x}/{y}.png?apiKey=${import.meta.env.VITE_GEOAPIFY_API}`}
+          maxZoom={15}
         />
         {hasRouteCoordinates ? (
           <>

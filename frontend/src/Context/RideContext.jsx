@@ -69,7 +69,10 @@ console.log(vehicleType);
       
 
       const nextRouteData = response?.data ?? null
-      setRouteData(nextRouteData)
+
+      console.log(nextRouteData?.features[0]?.geometry?.coordinates[0]);
+      
+      // setRouteData(nextRouteData)
       return nextRouteData
     } catch (error) {
       console.error('Error fetching route GeoJSON:', error)

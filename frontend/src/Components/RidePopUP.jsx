@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useRideContext } from '../Context/RideContext';
+
 import axios from 'axios'
 
 
@@ -8,7 +8,7 @@ const RidePopUP = (props) => {
 
   const{destination,origin,user,fare,distance}=props.Ride || {}
   
-  const {fetchAndDrawRoute}=useRideContext()
+  
   const [CaptainCurrent, setCaptainCurrent] = useState({})
 
  
@@ -95,7 +95,7 @@ useEffect(() => {
   
         <div className="flex flex-col w-full mt-8 gap-4">
           <button onClick={async() => {
-               await fetchAndDrawRoute(CaptainCurrent,origin)
+               
               if (props.setConfirmShowRide) props.setConfirmShowRide(true)
               if (props.setShowRide) props.setShowRide(false)
                 props.ConfirmRide()

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 import image from '../assets/map.png'
 import { useGSAP } from "@gsap/react/dist";
@@ -83,6 +83,8 @@ const home = () => {
                  lng:longitude
                }
              })
+            
+             
            })
          } 
        }, 10000)
@@ -139,6 +141,7 @@ const home = () => {
   const ConfirmRide = useRef(null)
   const LookingRideRef = useRef(null)
   const WaitingForDriverRef = useRef(null)
+  const [Routedata, setDrawedata] = useState(null)
   
   
 const submitHandler = (e) => {
@@ -191,7 +194,6 @@ const fetchSuggestions = async (value, field) => {
     setIsFetchingSuggestions(false)
   }
 }
-
 const debouncedFetchSuggestions = (value, field) => {
   if (debounceTimerRef.current) {
     clearTimeout(debounceTimerRef.current)
@@ -201,7 +203,6 @@ const debouncedFetchSuggestions = (value, field) => {
     fetchSuggestions(value, field)
   }, 500)
 }
-
 const handleSuggestionSelect = (location) => {
   const value = location.address || location.name
 
@@ -213,6 +214,71 @@ const handleSuggestionSelect = (location) => {
 
   setSuggestions([])
   
+}
+const Findtrip = async() => {
+  
+  const token = localStorage.getItem('token')
+  
+  if (!socket || !user?._id) {
+    console.warn('Socket is not ready yet')
+    return
+  }
+  
+  
+  
+  if(pickup && destination){
+    setLoading(true)
+    
+    setPanelopen(false)
+  }
+  try {
+    
+    const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/ride/getfare`, {
+      params: {
+        origin: pickup,
+        destination: destination
+      },
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    setFare(response.data)
+    
+    
+  } catch (error) {
+    console.error('Error fetching fare:', error)
+  }finally {
+    setLoading(false) // stop spinner, whether success or fail
+  }
+  
+  
+  if(pickup && destination){
+    setVehiclePanel(true) 
+    setPanelopen(false)
+  }
+  
+}
+const DefaultLocation = async () => {
+  const token = localStorage.getItem('token')
+  if(!token) {
+    alert('Please login to use this feature')
+    return
+  }
+
+
+
+  const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/maps/current-location`, {
+    params: {
+      lat: currentLocation.lat,
+      lon: currentLocation.lng
+    },
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  setPickup(response.data.address)
+}
+const Draw=async (origin,destination) => {
+  const data=await fetchAndDrawRoute(origin,destination)
+
+  
+  setDrawedata(data)
 }
 
 useGSAP(()=>{
@@ -311,68 +377,7 @@ useGSAP(()=>{
   }
 },[waitingForDriverPanel])
 
-const Findtrip = async() => {
-  
-  const token = localStorage.getItem('token')
 
-  if (!socket || !user?._id) {
-    console.warn('Socket is not ready yet')
-    return
-  }
-
-
-
-  if(pickup && destination){
-    setLoading(true)
-    
-    setPanelopen(false)
-  }
-  try {
-    
-    const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/ride/getfare`, {
-      params: {
-        origin: pickup,
-        destination: destination
-      },
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    setFare(response.data)
-   
-    
-  } catch (error) {
-    console.error('Error fetching fare:', error)
-  }finally {
-    setLoading(false) // stop spinner, whether success or fail
-  }
-
-
-  if(pickup && destination){
-    setVehiclePanel(true) 
-    setPanelopen(false)
-  }
-  
-}
-
-
-
-const DefaultLocation = async () => {
-  const token = localStorage.getItem('token')
-  if(!token) {
-    alert('Please login to use this feature')
-    return
-  }
-
-
-
-  const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/maps/current-location`, {
-    params: {
-      lat: currentLocation.lat,
-      lon: currentLocation.lng
-    },
-    headers: { Authorization: `Bearer ${token}` }
-  })
-  setPickup(response.data.address)
-}
 
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-[#343134]">
@@ -383,7 +388,7 @@ const DefaultLocation = async () => {
    
       <div className="absolute inset-0 z-0">
         
-        <Map LiveLocation={userLiveLocation} />
+        <Map LiveLocation={userLiveLocation} routeData={Routedata} />
       </div>
 
 
@@ -435,6 +440,7 @@ const DefaultLocation = async () => {
             <button
               onClick={() => {
                 Findtrip();
+                Draw(pickup,destination)
                 fetchAndDrawRoute(pickup, destination);
               }}
               disabled={loading}
