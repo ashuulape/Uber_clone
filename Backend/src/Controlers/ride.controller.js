@@ -119,5 +119,27 @@ const {rideId,OTP}=req.query
 
 }
 
-module.exports={createRide, getFair ,confirmRide,startRide}
+const endRide=async (req,res) => {
+    const error = validationResult(req)
+    if(!error.isEmpty()){
+        return res.status(400).json({error:error.message})
+    }
+
+
+    const {rideId}=req.body
+console.log(rideId);
+
+    try {
+        const ride = await rideService.endRide({rideId,captain:req.captain})
+
+        sendMessageToSocketId(ride.user.socketId, 'ride-ended', ride)
+
+        res.status(200).json(ride)
+
+    } catch (error) {
+        return res.status(500).json({message:'error in controller'})
+    }
+}
+
+module.exports={createRide, getFair ,confirmRide,startRide,endRide}
 

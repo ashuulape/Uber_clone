@@ -6,11 +6,28 @@ import gsap from 'gsap'
 import { useRideContext } from '../Context/RideContext'
 import { captainDataContext } from '../Context/CaptainContext'
 import Map from '../Components/Map'
+import axios from 'axios'
 
 
 const FinishRidePanel = (props) => {
+    const navigate =useNavigate()
    
-
+const endride =async () => {
+    
+    const response=await axios.post(`${import.meta.env.VITE_BASE_URL}/api/ride/end-ride`,{
+        rideId:props?.Ride._id,
+    },
+    {
+        headers:{
+            Authorization:`Bearer ${localStorage.getItem('token')}`
+        }
+    }
+    )
+    if(response.status===200){
+        navigate('/captainhome')
+    } 
+ 
+}
 
 
     return (
@@ -26,12 +43,12 @@ const FinishRidePanel = (props) => {
                         <img className='h-full w-full object-cover' src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=1760&auto=format&fit=crop" alt="Rider" />
                     </div>
                     <div>
-                        <h2 className='text-lg font-semibold'>Ashutosh Singh</h2>
+                        <h2 className='text-lg font-semibold'>{props?.Ride?.user?.fullname?.firstname} {props?.Ride?.user?.fullname?.lastname}</h2>
                         <h3 className='text-sm text-gray-400'>Passenger</h3>
                     </div>
                 </div>
                 <div className='text-right'>
-                    <h2 className='text-xl font-bold text-white'>2.2 KM</h2>
+                    <h2 className='text-xl font-bold text-white'>{props?.Ride?.distance} KM</h2>
                     <div className="mt-1 text-sm font-semibold flex items-center justify-end gap-1">
                         <i className="ri-star-fill text-yellow-500"></i>
                         <span className='text-white/50'>4.9</span>
@@ -44,47 +61,64 @@ const FinishRidePanel = (props) => {
                 <div className="flex items-center gap-4 border-b border-gray-700 pb-4">
                     <i className="ri-map-pin-2-fill text-xl text-gray-300"></i>
                     <div>
-                        <h3 className="text-lg font-medium">562/11-A</h3>
-                        <p className="text-sm text-gray-400">Kankariya Talab, Bhopal</p>
+                        <h3 className="text-lg font-medium">PickUp</h3>
+                        <p className="text-sm text-gray-400">{props?.Ride?.origin}</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-4 border-b border-gray-700 pb-4">
                     <i className="ri-map-pin-fill text-xl text-gray-300"></i>
                     <div>
                         <h3 className="text-lg font-medium">Third Wave Coffee</h3>
-                        <p className="text-sm text-gray-400 line-clamp-2">17th Cross Rd, PWD Quarters, 1st Sector, HSR Layout, Bengaluru</p>
+                        <p className="text-sm text-gray-400 line-clamp-2">{props?.Ride?.destination}</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-4 pb-2">
                     <i className="ri-currency-line text-xl text-gray-300"></i>
                     <div>
-                        <h3 className="text-lg font-medium">₹193.20</h3>
+                        <h3 className="text-lg font-medium">₹ {props?.Ride?.fare}</h3>
                         <p className="text-sm text-gray-400">Cash</p>
                     </div>
                 </div>
             </div>
 
-            <Link to='/captainhome' className="w-full flex items-center justify-center bg-white text-black font-bold text-lg py-3 rounded-xl active:bg-white/20 transition-colors">
+            <button 
+            onClick={endride}
+            className="w-full flex items-center justify-center bg-white text-black font-bold text-lg py-3 rounded-xl active:bg-white/20 transition-colors">
                 Finish Ride
-            </Link>
+            </button>
         </div>
     )
 }
 
 const CaptainRiding = () => {
- const {Ride,CaptainLiveLoaction } = useContext(captainDataContext)
+
+    const {fetchAndDrawRoute}=useRideContext()
+
+ const {Ride,CaptainLiveLoaction  } = useContext(captainDataContext)
+ const [Drawdata, setDrawdata] = useState({})
 
      const navigate=useNavigate()
-     
-    console.log(Ride);
 
-    useEffect(() => {
-        if(Ride===undefined){
-            navigate('/captainhome')
-        }  
-      
+     
+     
+     
+     useEffect( () => {
+         const getdata =  async () => {
+             
+             const  {origin,destination}=await Ride 
+                 
+                 const data= await fetchAndDrawRoute(origin,destination)
+                 setDrawdata(data)
+               console.log(Drawdata);
+             }
+     getdata()        
+         if(Ride===undefined || Ride == {}){
+             navigate('/captainhome')
+            }  
+            
+        
+
     }, [Ride])
-    
 
 
     const [finishRidePanel, setFinishRidePanel] = useState(false)
@@ -120,12 +154,12 @@ const CaptainRiding = () => {
             </div>
 
             {/* Map */} 
-            <div className='h-4/5 w-full overflow-hidden'>
-              <Map LiveLocation={CaptainLiveLoaction} />
+            <div className='h-4/5 w-full overflow-hidden relative z-[0]'>
+              <Map LiveLocation={CaptainLiveLoaction}  routeData={Drawdata}/>
             </div>
 
             {/* Bottom strip */}
-            <div className='h-1/5 bg-black flex items-center justify-between px-6 relative z-20 shadow-[0_-10px_20px_rgba(0,0,0,0.5)]'>
+            <div className='h-1/5 bg-black flex items-center justify-between px-6 relative z-20 shadow-[0_-10px_20px_rgba(0,0,0,0.5)] bottom-0 w-full  z-50'>
                 <div className='flex flex-col'>
                     <div className='flex items-center gap-2 text-gray-400 text-sm mb-1'>
                         <i className="ri-map-pin-fill text-white text-base"></i>
@@ -144,8 +178,8 @@ const CaptainRiding = () => {
             </div>
 
             {/* Finish Ride Panel */}
-            <div ref={finishRidePanelRef} className='translate-y-full absolute bottom-0 w-full z-30'>
-                <FinishRidePanel setFinishRidePanel={setFinishRidePanel} />
+            <div ref={finishRidePanelRef} className='translate-y-full absolute bottom-0 w-full absolute z-100'>
+                <FinishRidePanel setFinishRidePanel={setFinishRidePanel} Ride={Ride}/>
             </div>
         </div>
     )

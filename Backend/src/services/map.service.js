@@ -81,6 +81,39 @@ const getDistanceTime=async(origin,destination,)=>{
 
 }
 
+const getDistanceTimeByCoords=async(origin,destination,)=>{
+    // console.log(origin,coods);
+    
+     if (!origin || !destination) {
+        throw new Error('origin & distance is required');
+    }
+
+
+
+
+   const originLonLat=`${originCoords[0].lat},${originCoords[0].lon }`
+   const destinationLonLat=`${destinationCoords[0].lat},${destinationCoords[0].lon }`
+
+  
+   
+
+        // https://api.geoapify.com/v1/routing?waypoints=16.6014579,74.5097272|16.6959348,74.4555755&mode=drive&apiKey=YOUR_API_KEY
+
+        const response = await axios.get(`${url}/v1/routing`, {
+        params: {
+            waypoints:`${originLonLat}|${destinationLonLat}`,
+            mode:'drive',
+            apiKey:goeApikey
+           
+        }
+    });
+
+    return response.data
+
+
+
+}
+
 
 const Suggestion=async (address) => {
 

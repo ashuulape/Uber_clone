@@ -1,9 +1,19 @@
 import React, { useEffect } from 'react'
-import { MapContainer, TileLayer, Marker, GeoJSON } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, GeoJSON, useMap } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import userIconURL from '../assets/mask.png'
 import destinationIconURL from '../assets/destinations.png'
+
+const LiveUpdater = ({ liveLocation }) => {
+  const map = useMap();
+  useEffect(() => {
+    if (liveLocation?.lat && liveLocation?.lng) {
+      map.setView([liveLocation.lat, liveLocation.lng]);
+    }
+  }, [liveLocation, map]);
+  return null;
+};
 
 const Map = (props) => {
 
@@ -72,10 +82,7 @@ const destinationIcon = L.icon({
   const safeRouteData = sanitizeRouteData(routeData)
   const routeCoordinates = collectRoutePoints(safeRouteData?.features?.[0]?.geometry?.coordinates ?? safeRouteData?.geometry?.coordinates ?? [])
   const hasRouteCoordinates = routeCoordinates.length > 0
-  const originPoint = hasRouteCoordinates ? routeCoordinates[0] : null
   const destinationPoint = hasRouteCoordinates ? routeCoordinates[routeCoordinates.length - 1] : null
-
-  
 
   if (!props?.LiveLocation?.lat || !props?.LiveLocation?.lng) return (
   <div className="h-full w-full flex items-center justify-center">
@@ -93,22 +100,16 @@ const destinationIcon = L.icon({
         zoomControl={false}
         scrollWheelZoom={true}
       >
+        <LiveUpdater liveLocation={props.LiveLocation} />
         <TileLayer
           url={`https://maps.geoapify.com/v1/tile/dark-matter-brown/{z}/{x}/{y}.png?apiKey=${import.meta.env.VITE_GEOAPIFY_API}`}
           maxZoom={15}
         />
         {hasRouteCoordinates ? (
           <>
-            {originPoint && (
-              <Marker
-                key={`origin-${originPoint[1]}-${originPoint[0]}`}
-                position={[originPoint[1], originPoint[0]]}
-                icon={userIcon}
-              />
-            )}
+            <Marker position={[props?.LiveLocation?.lat, props?.LiveLocation?.lng]} icon={userIcon} />
             {destinationPoint && (
               <Marker
-                key={`dest-${destinationPoint[1]}-${destinationPoint[0]}`}
                 position={[destinationPoint[1], destinationPoint[0]]}
                 icon={destinationIcon}
               />

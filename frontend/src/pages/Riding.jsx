@@ -1,26 +1,29 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import image from '../assets/map.png'
 import car from '../assets/car.png'
 import auto from '../assets/auto.png'
 import bike from '../assets/bike.png'
-
+import { useSocketContext } from '../context/SocketContext'
 import { useRideContext } from '../Context/RideContext'
 import { userDataContext } from '../Context/UserContext';
 import Map from '../Components/Map'
 
 
 const Riding = () => {
-
+  
   const navigate=useNavigate()
-  const {rideInfo}=useRideContext()
-
-
+  const {rideInfo ,fetchAndDrawRoute}=useRideContext()
+  const {socket}=useSocketContext()
+  
+  
+  const [Drawdata, setDrawdata] = useState({})
+  
   const{userLiveLocation}=useContext(userDataContext)
   const vehicleType=rideInfo?.captain?.vehicle?.vehicleType
-
-    const VehicleImage = () => {
-      if (vehicleType == 'car') {
+  
+  const VehicleImage = () => {
+    if (vehicleType == 'car') {
         return car;
       } else if (vehicleType == 'auto') {
         return auto;
@@ -29,27 +32,51 @@ const Riding = () => {
       }
     };
 
-   
-   useEffect(() => {
-     
-     if(rideInfo==undefined){
-       navigate('/home')
-     }
-   
+useEffect(() => {
+  socket.on('ride-ended', () => {
+    navigate('/home')
+  })
+
+  return () => {
+    socket.off('ride-ended')
+  }
+}, [socket])
+
+
     
-   }, [rideInfo])
+  
+    
+
+
+        useEffect(() => {
+
+
+          const getdata= async () => {
+
+            const {origin,destination}=rideInfo 
+            const data=await fetchAndDrawRoute(origin,destination)
+            setDrawdata(data)
+          }
+          getdata()
+          
+          if(rideInfo==undefined ||rideInfo=={}   ){
+            navigate('/home')
+          }
+        
+         
+        }, [rideInfo])
  
   
   return (
-    <div className='h-screen bg-black overflow-hidden'>
+    <div className='h-screen bg-black overflow-hidden relative'>
           {/* Home Button Overlay */}
           <Link to='/home' className='bg-black text-white p-2 fixed left-4 top-4 z-10 backdrop-blur-md flex items-center justify-center w-12 h-12 rounded-full border border-white/30 text-white shadow-lg active:scale-95 transition-transform'>
               <i className="ri-home-5-line text-2xl font-bold"></i>
           </Link>
 
           {/* Map Top Half */}
-          <div className='h-3/5 w-full overflow-hidden'  >
-                <Map LiveLocation={userLiveLocation} />
+          <div className='h-3/5 w-full overflow-hidden relative z-0'  >
+                <Map LiveLocation={userLiveLocation} routeData={Drawdata} />
           </div>
 
           {/* Ride Details Bottom Half */}

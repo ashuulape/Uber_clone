@@ -17,11 +17,15 @@ fareValidation=[
     query('destination').notEmpty().withMessage('Dropoff location is required')
 ]
 
+
 confirmValidation=[
     body('rideId').isMongoId().withMessage('Invalid Id'),
     
 ]
-
+endRideValidation=[
+    body('rideId').isMongoId().withMessage('Invalid Id'),
+    
+]
 startRideValidation=[
      query('rideId').isMongoId().withMessage('Invalid ride id'),
     query('OTP').isString().isLength({ min: 6, max: 6 }).withMessage('Invalid OTP'),]
@@ -32,7 +36,6 @@ router.post('/create', authMiddleware.authUsers, rideValidation,rideController.c
 router.get('/getfare', authMiddleware.authUsers, fareValidation, rideController.getFair);
 router.post('/confirm', authMiddleware.authCaptain,confirmValidation, rideController.confirmRide);
 
-
-
+router.post('/end-ride',authMiddleware.authCaptain,endRideValidation,rideController.endRide)
 
 module.exports = router;

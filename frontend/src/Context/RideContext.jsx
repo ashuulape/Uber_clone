@@ -28,7 +28,7 @@ const RideProvider = ({ children }) => {
   const [fare, setFare] = useState({})
   const [rideInfo, setRideInfo] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [routeData, setRouteData] = useState(null)
+  
 
   const confirmRideSelection = async (vehicleType) => {
     const token = localStorage.getItem('token')
@@ -55,7 +55,7 @@ console.log(vehicleType);
     const token = localStorage.getItem('token')
     if (!token) {
       console.warn('No auth token found for route request')
-      setRouteData(null)
+      
       return null
     }
 
@@ -69,14 +69,12 @@ console.log(vehicleType);
       
 
       const nextRouteData = response?.data ?? null
-
-      console.log(nextRouteData?.features[0]?.geometry?.coordinates[0]);
+      console.log(nextRouteData);
       
-      // setRouteData(nextRouteData)
       return nextRouteData
     } catch (error) {
       console.error('Error fetching route GeoJSON:', error)
-      setRouteData(null)
+      
       return null
     } finally {
       setLoading(false)
@@ -116,8 +114,8 @@ console.log(vehicleType);
         setLoading,
         confirmRideSelection,
         fetchAndDrawRoute,
-        routeData,
-        setRouteData,
+        
+  
       }}
     >
       {children}

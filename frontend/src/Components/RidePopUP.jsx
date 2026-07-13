@@ -1,16 +1,23 @@
 import React, { useEffect, useState } from 'react'
 
 import axios from 'axios'
-
-
+import { useRideContext } from '../Context/RideContext'
 
 const RidePopUP = (props) => {
 
   const{destination,origin,user,fare,distance}=props.Ride || {}
   
-  
+  const { fetchAndDrawRoute }=useRideContext()
   const [CaptainCurrent, setCaptainCurrent] = useState({})
+ 
 
+
+  const Draw=async (origin,destination) => {
+  const data=await fetchAndDrawRoute(origin,destination)
+
+  
+  props.setDrawdata(data)
+}
  
 useEffect(() => {
   const fetchLocation = async () => {
@@ -95,7 +102,7 @@ useEffect(() => {
   
         <div className="flex flex-col w-full mt-8 gap-4">
           <button onClick={async() => {
-               
+               await Draw(CaptainCurrent,origin)
               if (props.setConfirmShowRide) props.setConfirmShowRide(true)
               if (props.setShowRide) props.setShowRide(false)
                 props.ConfirmRide()

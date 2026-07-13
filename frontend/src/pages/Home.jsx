@@ -111,10 +111,16 @@ const home = () => {
   }, [socket, setLookingPanel, setWaitingForDriverPanel, setRideInfo]);
 
 
-  socket.on('ride-started',ride=>{
+  useEffect(() => {
+  socket.on('ride-started', ride => {
     setWaitingForDriverPanel(false)
     navigate('/riding')
   })
+
+  return () => {
+    socket.off('ride-started') // <-- is this missing?
+  }
+}, [socket])
 
 
 

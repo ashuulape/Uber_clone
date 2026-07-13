@@ -1,10 +1,10 @@
 import React, { createContext, useEffect, useState } from 'react'
-import { useSocketContext } from '../Context/SocketContext'
+
 export const  userDataContext =createContext()
 
 const UserContext = ({children}) => {
 
-const { socket  } = useSocketContext()
+
 const [userLiveLocation, setuserLiveLocation] = useState({})
 const [user, setuser] = useState({
 
@@ -18,12 +18,10 @@ const [user, setuser] = useState({
 
 
 
-useEffect(() => {
-    if (userLiveLocation?.lat && userLiveLocation?.lng) return
-
-    navigator.geolocation.getCurrentPosition(
+  useEffect(() => {
+    const watchId = navigator.geolocation.watchPosition(
       (position) => {
-        setuserLiveLocation?.({
+        setuserLiveLocation({
           lat: position.coords.latitude,
           lng: position.coords.longitude,
         })
@@ -34,8 +32,10 @@ useEffect(() => {
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     )
 
-    
-  }, [socket, user?.id]) 
+    return () => {
+      navigator.geolocation.clearWatch(watchId)
+    }
+  }, [])
 
 // console.log(userLiveLocation);
 

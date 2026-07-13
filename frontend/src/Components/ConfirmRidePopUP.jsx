@@ -1,13 +1,40 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import { useGSAP } from '@gsap/react/dist'
+import gsap from 'gsap'
 
 const ConfirmRidePopUP = (props) => {
     const [otp, setOtp] = useState('')
-    console.log(props?.Ride?._id);
+    const infoblock = useRef(null)
+    const [showInfo, setshowInfo] = useState(false)
+ 
     const navigate=useNavigate()
     
+
+ 
+useGSAP(()=>{
+ if(showInfo){
+   gsap.to(infoblock.current,{
+    display:"block",
+    duration:0.5,
+    ease:'power2.out'
+  })
+ 
+ }else{
+  gsap.to(infoblock.current,{
+ display:"none",
+    duration:0.5,
+    ease:'power2.out'
+  })
+ 
+
+ }
+ },[showInfo])
+
+
+
 
     const submitHandler = async(e) => {
         e.preventDefault()
@@ -32,8 +59,8 @@ const ConfirmRidePopUP = (props) => {
    <div className='bg-black text-white px-4 font-sans w-full flex flex-col items-center rounded-t-3xl pb-8 shadow-[0_-10px_20px_rgba(0,0,0,0.5)]'>
         {/* Top indicator handle to close */}
         <div onClick={() => { 
-            if (props.setConfirmShowRide) props.setConfirmShowRide(false)
-        }} className="w-[15%] h-1.5 bg-gray-600 rounded-full mx-auto mb-4 mt-5 cursor-pointer"></div>
+            setshowInfo(prev=>!prev)
+        }} className="w-[15%] h-3 bg-gray-600 rounded-full mx-auto mb-4 mt-5 cursor-pointer"></div>
         
         <h1 className="text-start text-2xl font-semibold w-full mb-6">Confirm this ride to Start</h1>
         
@@ -56,7 +83,7 @@ const ConfirmRidePopUP = (props) => {
             </div>
         </div>
 
-       <div className="w-full flex flex-col gap-4 mt-6 px-2">
+       <div ref={infoblock} className="w-full flex flex-col gap-4 mt-6 px-2 ">
           {/* Origin */}
           <div className="flex items-center gap-4 border-b border-gray-700 pb-4">
             <i className="ri-map-pin-2-fill text-xl text-gray-300"></i>
@@ -96,7 +123,8 @@ const ConfirmRidePopUP = (props) => {
                     className='w-full bg-gray-900 border border-gray-700 px-4 py-3 text-lg rounded-xl text-white outline-none focus:border-green-500 font-mono tracking-widest text-center' 
                 />
                 
-                <button className="w-full flex items-center justify-center bg-white text-black font-bold text-lg py-3 rounded-xl active:bg-white transition-colors">
+                <button className="w-full flex items-center justify-center bg-white text-black font-bold text-lg py-3 rounded-xl active:bg-white transition-colors"
+                >
                     Confirm
                 </button>
                 

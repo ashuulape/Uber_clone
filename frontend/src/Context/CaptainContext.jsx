@@ -39,7 +39,7 @@ const CaptainContext = ({ children }) => {
     
 
     return (
-        <captainDataContext.Provider value={{ captain, setCaptain, CaptainLiveLoaction ,setRide ,Ride }}>
+        <captainDataContext.Provider value={{ captain, setCaptain, CaptainLiveLoaction ,setRide ,Ride  }}>
             {children}
         </captainDataContext.Provider>
     )

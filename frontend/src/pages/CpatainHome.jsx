@@ -25,6 +25,7 @@ const CpatainHome = () => {
     const { socket  } = useSocketContext()
     const [showRide,setShowRide] = useState(false)
     const [confirmShowRide, setConfirmShowRide] = useState(false)
+     const [Drawdata, setDrawdata] = useState({})
   const RidePopUpRef = useRef(null)
   const ConfirmPopUpRef = useRef(null)
      
@@ -161,7 +162,7 @@ const [DistaceTime, setDistaceTime] = useState({})
 
         {/* Map Background */}
         <div className='h-full w-full overflow-hidden absolute top-0 left-0 z-0'>
-           <Map LiveLocation={CaptainLiveLoaction}/>
+           <Map LiveLocation={CaptainLiveLoaction} routeData={Drawdata} />
         </div>
 
         {/* Bottom Details Panel */}
@@ -171,7 +172,7 @@ const [DistaceTime, setDistaceTime] = useState({})
         </div>
 
         <div ref={RidePopUpRef} className='pointer-events-auto absolute inset-x-0 bottom-0 z-30 translate-y-full'>
-          <RidePopUP Ride={Ride} setShowRide={setShowRide} setConfirmShowRide={setConfirmShowRide} ConfirmRide={ConfirmRide} DistaceTime={DistaceTime} setDistaceTime={setDistaceTime} DistanceTwoPoints={DistanceTwoPoints} CaptainLiveLoaction={CaptainLiveLoaction}  />
+          <RidePopUP Ride={Ride} setDrawdata={setDrawdata} setShowRide={setShowRide} setConfirmShowRide={setConfirmShowRide} ConfirmRide={ConfirmRide} DistaceTime={DistaceTime} setDistaceTime={setDistaceTime} DistanceTwoPoints={DistanceTwoPoints} CaptainLiveLoaction={CaptainLiveLoaction}  />
         </div>
         <div ref={ConfirmPopUpRef} className='pointer-events-auto absolute inset-x-0 bottom-0 z-40 translate-y-full'>
           <ConfirmRidePopUP Ride={Ride} setConfirmShowRide={setConfirmShowRide} />
