@@ -18,13 +18,8 @@ const vehicleType = rideInfo?.vehicleType || 'car';
   };
 
 
-  const distancebetweenPoints = async() => {
-    if (!currentLocation || !rideInfo?.loaction) {
-      console.warn('Current location or ride origin is not available');
-      return 0;
-    }
-
-
+  const distancebetweenPoints = async () => {
+    if (!currentLocation || !rideInfo?.loaction) return 0;
   }
 
   return (

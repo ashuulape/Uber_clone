@@ -48,9 +48,7 @@ const CaptainSignUp =  () => {
         
 
      }
-     else{
-        console.log(response.data)
-     }
+
         
         setEmail('')
         setPassword('')

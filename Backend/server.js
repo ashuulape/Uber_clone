@@ -1,11 +1,8 @@
 require('dotenv').config();
 const app = require('./src/app.js');
 const http = require('http');
-const dotenv = require('dotenv');
 const connectDB = require('./src/Database/db.js');
 const { initializeSocket } = require('./src/socket.js');
-
-dotenv.config();
 
 connectDB();
 

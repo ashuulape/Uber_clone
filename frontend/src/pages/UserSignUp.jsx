@@ -38,9 +38,7 @@ const UserSignUp = () => {
         navigate('/home')
 
      }
-     else{
-        console.log(response.data)
-     }
+
 
 
         setEmail('')

@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
 import axios from 'axios'
-import image from '../assets/map.png'
 import { useGSAP } from "@gsap/react/dist";
 import gsap from 'gsap';
 import { useRef } from 'react';
@@ -59,8 +58,6 @@ const home = () => {
     setLoading,
     confirmRideSelection,
     fetchAndDrawRoute,
-    routeData,
-    setRouteData
   } = useRideContext()
 
    
@@ -97,7 +94,6 @@ const home = () => {
     if (!socket) return;
     
     const handleRideConfirmed = (ride) => {
-      console.log("ride", ride);
       setLookingPanel(false);
       setWaitingForDriverPanel(true);
       setRideInfo(ride);
@@ -118,7 +114,7 @@ const home = () => {
   })
 
   return () => {
-    socket.off('ride-started') // <-- is this missing?
+    socket.off('ride-started')
   }
 }, [socket])
 
@@ -194,7 +190,6 @@ const fetchSuggestions = async (value, field) => {
 
     setSuggestions(normalized)
   } catch (error) {
-    console.error('Suggestion fetch failed', error)
     setSuggestions([])
   } finally {
     setIsFetchingSuggestions(false)
@@ -225,10 +220,8 @@ const Findtrip = async() => {
   
   const token = localStorage.getItem('token')
   
-  if (!socket || !user?._id) {
-    console.warn('Socket is not ready yet')
-    return
-  }
+  if (!socket || !user?._id) return
+  
   
   
   
@@ -249,9 +242,9 @@ const Findtrip = async() => {
     setFare(response.data)
     
     
-  } catch (error) {
-    console.error('Error fetching fare:', error)
-  }finally {
+  } catch {
+    // fare fetch failed, panel stays hidden
+  } finally {
     setLoading(false) // stop spinner, whether success or fail
   }
   
@@ -446,8 +439,7 @@ useGSAP(()=>{
             <button
               onClick={() => {
                 Findtrip();
-                Draw(pickup,destination)
-                fetchAndDrawRoute(pickup, destination);
+                Draw(pickup, destination);
               }}
               disabled={loading}
               className="bg-white text-black w-[80%] text-lg px-4 py-2 rounded flex items-center justify-center"

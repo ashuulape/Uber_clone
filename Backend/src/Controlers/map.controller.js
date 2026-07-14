@@ -19,11 +19,8 @@ const getCoordinates=async (req,res,next) => {
         
     
         
-         console.log(data);
         res.status(200).json(data)
     }catch(err){
-        console.log(err);
-        
         res.status(500).json({message:"internal server error"})
     }
 }
@@ -42,14 +39,10 @@ const getDistanceTime=async (req,res,next) => {
     try {
           const data=await mapservice.getDistanceTime(origin,destination)
 
-            console.log(data);
-        
           res.status(200).json(data)
 
         
     } catch (error) {
-        console.log(error);
-        
         res.status(500).json({message:"internal server error"})
     }
 
@@ -68,8 +61,6 @@ const getSuggestion=async (req,res,next) => {
 
         res.status(200).json(data)
     }catch(err){
-        console.log(err);
-        
         res.status(500).json({message:"internal server error"})
     }
 }
@@ -93,8 +84,6 @@ const getCurrentLocation=async (req,res,next) => {
 
         
     } catch (error) {
-        console.log(error);
-        
         res.status(500).json({message:"internal server error"})
     }
 }

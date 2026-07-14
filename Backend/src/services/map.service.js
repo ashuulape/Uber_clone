@@ -47,10 +47,8 @@ const getAddressCoordinate = async (address) => {
 
 
 
-const getDistanceTime=async(origin,destination,)=>{
-    // console.log(origin,coods);
-    
-     if (!origin || !destination) {
+const getDistanceTime = async (origin, destination) => {
+    if (!origin || !destination) {
         throw new Error('origin & distance is required');
     }
 
@@ -81,51 +79,14 @@ const getDistanceTime=async(origin,destination,)=>{
 
 }
 
-const getDistanceTimeByCoords=async(origin,destination,)=>{
-    // console.log(origin,coods);
-    
-     if (!origin || !destination) {
-        throw new Error('origin & distance is required');
+
+
+const Suggestion = async (address) => {
+    if (!address) {
+        throw new Error('query is required');
     }
 
-
-
-
-   const originLonLat=`${originCoords[0].lat},${originCoords[0].lon }`
-   const destinationLonLat=`${destinationCoords[0].lat},${destinationCoords[0].lon }`
-
-  
-   
-
-        // https://api.geoapify.com/v1/routing?waypoints=16.6014579,74.5097272|16.6959348,74.4555755&mode=drive&apiKey=YOUR_API_KEY
-
-        const response = await axios.get(`${url}/v1/routing`, {
-        params: {
-            waypoints:`${originLonLat}|${destinationLonLat}`,
-            mode:'drive',
-            apiKey:goeApikey
-           
-        }
-    });
-
-    return response.data
-
-
-
-}
-
-
-const Suggestion=async (address) => {
-
-    if(!address){
-        throw new Error('query is rewquired')
-        
-        
-    }
-    
-    const axios = require('axios');
-
-let config = {
+    const config = {
   method: 'get',
   maxBodyLength: Infinity,
   url: `${url}/v1/geocode/autocomplete`,
@@ -139,13 +100,10 @@ let config = {
 };
 
 try {
-  const response = await axios.request(config);
-  
-    return response.data
-
+    const response = await axios.request(config);
+    return response.data;
 } catch (error) {
-  console.log(error);
-  throw error;
+    throw error;
 }
 
 }
@@ -184,4 +142,4 @@ const getCaptainsInTheRadius=async (lat,lng ,radius) => {
     return captains
 }
 
-module.exports={getAddressCoordinate,getDistanceTime,Suggestion,CurrentLocation,getCaptainsInTheRadius  }
+module.exports = { getAddressCoordinate, getDistanceTime, Suggestion, CurrentLocation, getCaptainsInTheRadius };

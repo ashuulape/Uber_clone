@@ -29,8 +29,8 @@ useEffect(() => {
         }
       });
       setCaptainCurrent(res.data.address);
-    } catch (err) {
-      console.error(err);
+    } catch {
+      // location unavailable, proceed without it
     }
   };
   fetchLocation();

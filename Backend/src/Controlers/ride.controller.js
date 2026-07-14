@@ -43,7 +43,6 @@ const createRide = async (req, res) => {
        })
 
     } catch (error) {
-        console.log(error.message)
         res.status(400).json({error: error.message});
     }
 
@@ -73,11 +72,9 @@ const confirmRide = async (req, res) => {
     }
 
     const { rideId ,captainId } = req.body;
-    console.log(req.body)
 
     try {
         const ride = await rideService.confirmRide({ rideId, captain: req.captain});
-        console.log("Bckendride:",ride);
 
         const rideObj = ride.toObject();
 if (rideObj.captain) delete rideObj.captain.password;
@@ -87,7 +84,6 @@ if (rideObj.captain) delete rideObj.captain.password;
         return res.status(200).json(ride);
     } catch (err) {
 
-        console.log(err);
         return res.status(500).json({ message: err.message });
     }
 }
@@ -110,7 +106,6 @@ const {rideId,OTP}=req.query
         return res.status(200).json(ride);
     } catch (err) {
 
-        console.log(err);
         return res.status(500).json({ message: err.message });
     }
 
@@ -127,7 +122,6 @@ const endRide=async (req,res) => {
 
 
     const {rideId}=req.body
-console.log(rideId);
 
     try {
         const ride = await rideService.endRide({rideId,captain:req.captain})

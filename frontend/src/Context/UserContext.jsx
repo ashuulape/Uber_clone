@@ -26,9 +26,7 @@ const [user, setuser] = useState({
           lng: position.coords.longitude,
         })
       },
-      (error) => {
-        console.error('Error getting location:', error)
-      },
+      () => {},
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     )
 
@@ -37,7 +35,7 @@ const [user, setuser] = useState({
     }
   }, [])
 
-// console.log(userLiveLocation);
+
 
   
   

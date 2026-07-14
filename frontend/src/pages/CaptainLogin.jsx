@@ -30,9 +30,6 @@ const CaptainLogin = () => {
             setCaptain(data.captain)
             localStorage.setItem('token',data.token)
             navigate('/captainhome')
-            console.log(response.data)
-         }else{
-            console.log(response.data)
          }
 
          

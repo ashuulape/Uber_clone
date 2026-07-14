@@ -16,41 +16,41 @@ const initializeSocket = (server) => {
    
 
     socket.on('join', async (data) => {
-      console.log('join event received', data);
+      try {
+        const { userId, userType } = data;
+        if (!userId) return;
 
-      const { userId, userType } = data;
-
-      
-
-      if (userType === 'user') {
-        await userModel.findByIdAndUpdate(userId, {
-          socketId: socket.id,
-        });
-      } else if (userType === 'captain') {
-        await captainModel.findByIdAndUpdate(userId, {
-          socketId: socket.id,
-        });
+        if (userType === 'user') {
+          await userModel.findByIdAndUpdate(userId, {
+            socketId: socket.id,
+          });
+        } else if (userType === 'captain') {
+          await captainModel.findByIdAndUpdate(userId, {
+            socketId: socket.id,
+          });
+        }
+      } catch (error) {
+        // Suppress or handle error safely
       }
     });
 
     socket.on('update-location-captain', async (data) => {
-      const {userId ,location}=data
-      
-        await captainModel.findByIdAndUpdate(userId,{location})
-
-
-    })
-    socket.on('update-location-user', async (data) => {
-      const {userId ,location}=data
-      
-        await userModel.findByIdAndUpdate(userId,{location})
-
-
-    })
-
-    socket.on('disconnect', () => {
-      console.log('Socket disconnected:', socket.id);
+      try {
+        const {userId, location} = data;
+        if (!userId) return;
+        await captainModel.findByIdAndUpdate(userId, {location});
+      } catch (error) {}
     });
+
+    socket.on('update-location-user', async (data) => {
+      try {
+        const {userId, location} = data;
+        if (!userId) return;
+        await userModel.findByIdAndUpdate(userId, {location});
+      } catch (error) {}
+    });
+
+    socket.on('disconnect', () => {});
   });
 
   return io;

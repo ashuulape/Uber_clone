@@ -32,7 +32,6 @@ const RideProvider = ({ children }) => {
 
   const confirmRideSelection = async (vehicleType) => {
     const token = localStorage.getItem('token')
-console.log(vehicleType);
 
     const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/ride/create`,{
         origin: pickup,
@@ -53,11 +52,7 @@ console.log(vehicleType);
     if (!origin?.trim() || !destination?.trim()) return null
 
     const token = localStorage.getItem('token')
-    if (!token) {
-      console.warn('No auth token found for route request')
-      
-      return null
-    }
+    if (!token) return null
 
     setLoading(true)
 
@@ -69,12 +64,9 @@ console.log(vehicleType);
       
 
       const nextRouteData = response?.data ?? null
-      console.log(nextRouteData);
       
       return nextRouteData
-    } catch (error) {
-      console.error('Error fetching route GeoJSON:', error)
-      
+    } catch {
       return null
     } finally {
       setLoading(false)

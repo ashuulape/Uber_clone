@@ -109,7 +109,7 @@ const CaptainRiding = () => {
                  
                  const data= await fetchAndDrawRoute(origin,destination)
                  setDrawdata(data)
-               console.log(Drawdata);
+
              }
      getdata()        
          if(Ride===undefined || Ride == {}){

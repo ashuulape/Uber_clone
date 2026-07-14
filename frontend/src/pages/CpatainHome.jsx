@@ -60,12 +60,17 @@ const CpatainHome = () => {
        
      }, [ socket, captain?._id])
 
-     socket.on('new-ride', (data) => {
-        console.log('New ride request:', data);
-        setRide(data)
-        setShowRide(true)
-      });
-    
+     React.useEffect(() => {
+       const handleNewRide = (data) => {
+         setRide(data)
+         setShowRide(true)
+       }
+       socket.on('new-ride', handleNewRide);
+
+       return () => {
+         socket.off('new-ride', handleNewRide);
+       }
+     }, [socket, setRide, setShowRide])
     
 
   

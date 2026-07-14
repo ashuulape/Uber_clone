@@ -23,8 +23,7 @@ const authUsers=async(req,res,next)=>{
         return next()
         
     } catch (error) {
-        console.log(error)
-        res.status(500).json({message:error.message})
+        res.status(500).json({ message: error.message })
     }
 }
 
@@ -51,8 +50,7 @@ const authCaptain=async(req,res,next)=>{
         return next()
         
     } catch (error) {
-        console.log(error)
-        res.status(500).json({message:error.message})
+        res.status(500).json({ message: error.message })
     }
 }
 

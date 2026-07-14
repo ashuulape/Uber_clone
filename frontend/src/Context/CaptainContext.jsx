@@ -21,8 +21,6 @@ const CaptainContext = ({ children }) => {
 
 
     useEffect(() => {
-        if (CaptainLiveLoaction?.lat && CaptainLiveLoaction?.lng) return
-    
         navigator.geolocation.getCurrentPosition(
           (position) => {
             setCaptainLiveLoaction?.({
@@ -30,12 +28,10 @@ const CaptainContext = ({ children }) => {
               lng: position.coords.longitude,
             })
           },
-          (error) => {
-            console.error('Error getting location:', error)
-          },
+          () => {},
           { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
         )
-      }, [CaptainLiveLoaction]) 
+      }, []) 
     
 
     return (

@@ -13,27 +13,19 @@ const getFare=async (origin, destination) => {
 
    
 
-    const baseFareAuto = 50;
-    const baseFareBike = 20;
-    const baseFareCar = 80;
-    const ratePerKmAuto = 15;
-    const ratePerKmBike = 8;
-    const ratePerKmCar = 20;
-    const ratePerMinuteAuto = 2;
-    const ratePerMinuteBike = 1;
-    const ratePerMinuteCar = 3;
+        const rates = {
+        auto: { base: 50, perKm: 15, perMin: 2 },
+        bike: { base: 20, perKm: 8,  perMin: 1 },
+        car:  { base: 80, perKm: 20, perMin: 3 },
+    };
 
     const distance = distanceTime.features[0].properties.distance / 1000;
     const duration = distanceTime.features[0].properties.time / 60;
 
-    const autoFare = baseFareAuto + (distance * ratePerKmAuto) + (duration * ratePerMinuteAuto);
-    const bikeFare = baseFareBike + (distance * ratePerKmBike) + (duration * ratePerMinuteBike);
-    const carFare = baseFareCar + (distance * ratePerKmCar) + (duration * ratePerMinuteCar);
-
     return {
-        auto: Math.round(autoFare),
-        bike: Math.round(bikeFare),
-        car: Math.round(carFare),
+        auto: Math.round(rates.auto.base + distance * rates.auto.perKm + duration * rates.auto.perMin),
+        bike: Math.round(rates.bike.base + distance * rates.bike.perKm + duration * rates.bike.perMin),
+        car:  Math.round(rates.car.base  + distance * rates.car.perKm  + duration * rates.car.perMin),
         distance: Math.round(distance)
     };
 }
@@ -72,33 +64,27 @@ const createRide=async ({userId, origin, destination,vehicleType}) => {
     return ride;
 };
 
-const confirmRide =async ({rideId, captain}) => {
-  try  {if (!rideId) {
+const confirmRide = async ({ rideId, captain }) => {
+    if (!rideId) {
         throw new Error('Ride id is required');
     }
 
-    await rideModel.findOneAndUpdate({
-        _id: rideId
-    }, {
+    await rideModel.findOneAndUpdate({ _id: rideId }, {
         status: 'accepted',
         captain: captain._id
-    })
+    });
 
-    const ride = await rideModel.findOne({
-        _id: rideId
-    }).populate('user').populate('captain').select('+OTP');
+    const ride = await rideModel
+        .findOne({ _id: rideId })
+        .populate('user')
+        .populate('captain')
+        .select('+OTP');
 
     if (!ride) {
         throw new Error('Ride not found');
     }
 
-    console.log('ride:'+ ride)
-
-    return ride;}
-    catch (error) {
-
-        console.error(error)
-    }
+    return ride;
 }
 
 const startRide=async ({rideId,OTP, captain}) => {
