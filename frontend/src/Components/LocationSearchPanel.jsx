@@ -12,11 +12,6 @@ const LocationSearchPanel = ({
   return (
     <div className="bg-black h-fit w-full overflow-y-auto px-5 py-3 flex flex-col gap-1 select-none ">
       {isLoading ? (
-<<<<<<< HEAD
-        <div className="px-2 py-4 text-sm text-zinc-400 text-center">Searching locations...</div>
-      ) : !hasSuggestions ? (
-        <div className="px-2 py-4 text-sm text-zinc-400 text-center">Type a pickup or destination to see live suggestions.</div>
-=======
         <div className="px-2 py-4 text-sm text-zinc-400 text-center">
           Searching locations...
         </div>
@@ -24,7 +19,6 @@ const LocationSearchPanel = ({
         <div className="px-2 py-4 text-sm text-zinc-400 text-center">
           Type a pickup or destination to see live suggestions.
         </div>
->>>>>>> fixedBranch
       ) : (
         suggestions.map((loc) => (
           <div

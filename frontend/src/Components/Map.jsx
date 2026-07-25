@@ -1,18 +1,15 @@
-<<<<<<< HEAD
-import React, { useEffect } from 'react'
-import { MapContainer, TileLayer, Marker, GeoJSON, useMap } from 'react-leaflet'
-import 'leaflet/dist/leaflet.css'
-import L from 'leaflet'
-import userIconURL from '../assets/mask.png'
-import destinationIconURL from '../assets/destinations.png'
-=======
 import React, { useEffect } from "react";
-import { MapContainer, TileLayer, Marker, GeoJSON } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  GeoJSON,
+  useMap,
+} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import userIconURL from "../assets/mask.png";
 import destinationIconURL from "../assets/destinations.png";
->>>>>>> fixedBranch
 
 const LiveUpdater = ({ liveLocation }) => {
   const map = useMap();
@@ -99,18 +96,6 @@ const Map = (props) => {
       : null;
   };
 
-<<<<<<< HEAD
-  const safeRouteData = sanitizeRouteData(routeData)
-  const routeCoordinates = collectRoutePoints(safeRouteData?.features?.[0]?.geometry?.coordinates ?? safeRouteData?.geometry?.coordinates ?? [])
-  const hasRouteCoordinates = routeCoordinates.length > 0
-  const destinationPoint = hasRouteCoordinates ? routeCoordinates[routeCoordinates.length - 1] : null
-
-  if (!props?.LiveLocation?.lat || !props?.LiveLocation?.lng) return (
-  <div className="h-full w-full flex items-center justify-center">
-    <h1 className='text-center text-black/50 font-bold'>Loading map...</h1>
-    </div>
-)
-=======
   const safeRouteData = sanitizeRouteData(routeData);
   const routeCoordinates = collectRoutePoints(
     safeRouteData?.features?.[0]?.geometry?.coordinates ??
@@ -129,7 +114,6 @@ const Map = (props) => {
         <h1 className="text-center text-black/50 font-bold">Loading map...</h1>
       </div>
     );
->>>>>>> fixedBranch
 
   return (
     <div className="h-full w-full pointer-events-auto absolute z-0">
@@ -148,7 +132,10 @@ const Map = (props) => {
         />
         {hasRouteCoordinates ? (
           <>
-            <Marker position={[props?.LiveLocation?.lat, props?.LiveLocation?.lng]} icon={userIcon} />
+            <Marker
+              position={[props?.LiveLocation?.lat, props?.LiveLocation?.lng]}
+              icon={userIcon}
+            />
             {destinationPoint && (
               <Marker
                 position={[destinationPoint[1], destinationPoint[0]]}

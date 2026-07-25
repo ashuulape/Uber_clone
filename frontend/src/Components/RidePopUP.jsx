@@ -1,56 +1,10 @@
-<<<<<<< HEAD
-import React, { useEffect, useState } from 'react'
-
-import axios from 'axios'
-import { useRideContext } from '../Context/RideContext'
-=======
 import React, { useEffect, useState } from "react";
 
 import axios from "axios";
->>>>>>> fixedBranch
 
 const RidePopUP = (props) => {
   const { destination, origin, user, fare, distance } = props.Ride || {};
 
-<<<<<<< HEAD
-  const{destination,origin,user,fare,distance}=props.Ride || {}
-  
-  const { fetchAndDrawRoute }=useRideContext()
-  const [CaptainCurrent, setCaptainCurrent] = useState({})
- 
-
-
-  const Draw=async (origin,destination) => {
-  const data=await fetchAndDrawRoute(origin,destination)
-
-  
-  props.setDrawdata(data)
-}
- 
-useEffect(() => {
-  const fetchLocation = async () => {
-    try {
-      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/maps/current-location`, {
-        params: {
-          lat: props?.CaptainLiveLoaction?.lat,
-          lon: props?.CaptainLiveLoaction?.lng
-        }
-      });
-      setCaptainCurrent(res.data.address);
-    } catch {
-      // location unavailable, proceed without it
-    }
-  };
-  fetchLocation();
-}, []);
-    
-
-    
-    
-    
-  
-  
-=======
   const [CaptainCurrent, setCaptainCurrent] = useState({});
 
   useEffect(() => {
@@ -72,7 +26,6 @@ useEffect(() => {
     };
     fetchLocation();
   }, []);
->>>>>>> fixedBranch
 
   return (
     <div className="bg-black text-white px-4 font-sans w-full md:w-1/2 flex flex-col items-center rounded-t-3xl pb-8 shadow-[0_-10px_20px_rgba(0,0,0,0.5)]">
@@ -103,31 +56,12 @@ useEffect(() => {
             <h3 className="text-sm text-gray-400">Apple Pay</h3>
           </div>
         </div>
-<<<<<<< HEAD
-  
-        <div className="flex flex-col w-full mt-8 gap-4">
-          <button onClick={async() => {
-               await Draw(CaptainCurrent,origin)
-              if (props.setConfirmShowRide) props.setConfirmShowRide(true)
-              if (props.setShowRide) props.setShowRide(false)
-                props.ConfirmRide()
-          }} className="w-full bg-white text-black font-bold text-lg py-3 rounded-xl active:bg-green-400 transition-colors">
-            Accept
-          </button>
-          <button onClick={() => {
-              if (props.setShowRide) props.setShowRide(false)
-          }} className="w-full bg-white/20 text-red-500 font-semibold text-lg py-3 rounded-xl active:bg-gray-700 transition-colors">
-            Ignore
-          </button>
-          
-=======
         <div className="text-right">
           <h2 className="text-xl font-bold text-white">{distance || ""} KM</h2>
           <div className="mt-1 text-sm font-semibold flex items-center justify-end gap-1">
             <i className="ri-star-fill text-yellow-500"></i>
             <span className="text-white/50"> 4.9</span>
           </div>
->>>>>>> fixedBranch
         </div>
       </div>
 

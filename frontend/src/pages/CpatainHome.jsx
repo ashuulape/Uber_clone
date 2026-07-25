@@ -28,20 +28,10 @@ const CpatainHome = () => {
   React.useEffect(() => {
     if (!socket || !captain?._id) return;
 
-<<<<<<< HEAD
-    const { socket  } = useSocketContext()
-    const [showRide,setShowRide] = useState(false)
-    const [confirmShowRide, setConfirmShowRide] = useState(false)
-     const [Drawdata, setDrawdata] = useState({})
-  const RidePopUpRef = useRef(null)
-  const ConfirmPopUpRef = useRef(null)
-     
-=======
     socket.emit("join", {
       userType: "captain",
       userId: captain._id,
     });
->>>>>>> fixedBranch
 
     const locationInterval = setInterval(() => {
       if (navigator.geolocation) {
@@ -68,69 +58,6 @@ const CpatainHome = () => {
     setShowRide(true);
   });
 
-<<<<<<< HEAD
-     React.useEffect(() => {
-       const handleNewRide = (data) => {
-         setRide(data)
-         setShowRide(true)
-       }
-       socket.on('new-ride', handleNewRide);
-
-       return () => {
-         socket.off('new-ride', handleNewRide);
-       }
-     }, [socket, setRide, setShowRide])
-    
-
-  
-
-  
-
-  
-useGSAP(()=>{
- if(showRide){
-   gsap.to(RidePopUpRef.current,{
-    transform:'translateY(0)',
-    duration:1,
-    ease:'power3.out'
-  })
- 
- }else{
-  gsap.to(RidePopUpRef.current,{
-    transform:'translateY(100%)',
-    duration:1,
-    ease:'power3.out'
-  })
- 
-
- }
- },[showRide])
-
-useGSAP(()=>{
-  if(confirmShowRide){
-    gsap.to(ConfirmPopUpRef.current,{
-     transform:'translateY(0)',
-     duration:1,
-     ease:'power3.out'
-   })
-  }else{
-   gsap.to(ConfirmPopUpRef.current,{
-     transform:'translateY(100%)',
-     duration:1,
-     ease:'power3.out'
-   })
-  }
- },[confirmShowRide])
-
- const ConfirmRide=async () => {
-
-  const response=await axios.post(`${import.meta.env.VITE_BASE_URL}/api/ride/confirm`,{
-       rideId: Ride._id,
-            captainId: captain._id,
-  },{
-    headers:{
-                      Authorization: `Bearer ${localStorage.getItem('token')}`
-=======
   useGSAP(() => {
     if (showRide) {
       gsap.to(RidePopUpRef.current, {
@@ -144,7 +71,6 @@ useGSAP(()=>{
         duration: 1,
         ease: "power3.out",
       });
->>>>>>> fixedBranch
     }
   }, [showRide]);
 
@@ -207,17 +133,11 @@ useGSAP(()=>{
           <i className="ri-menu-line text-2xl font-bold"></i>
         </div>
 
-<<<<<<< HEAD
-        {/* Map Background */}
-        <div className='h-full w-full overflow-hidden absolute top-0 left-0 z-0'>
-           <Map LiveLocation={CaptainLiveLoaction} routeData={Drawdata} />
-=======
         <div className="flex flex-col items-start text-white">
           <p className="text-[10px] uppercase tracking-[0.3em] text-white/60">
             Driver
           </p>
           <p className="text-sm font-semibold text-capitalize">{captainName}</p>
->>>>>>> fixedBranch
         </div>
 
         <Link
@@ -239,10 +159,6 @@ useGSAP(()=>{
           <CaptainDetails />
         </div>
 
-<<<<<<< HEAD
-        <div ref={RidePopUpRef} className='pointer-events-auto absolute inset-x-0 bottom-0 z-30 translate-y-full'>
-          <RidePopUP Ride={Ride} setDrawdata={setDrawdata} setShowRide={setShowRide} setConfirmShowRide={setConfirmShowRide} ConfirmRide={ConfirmRide} DistaceTime={DistaceTime} setDistaceTime={setDistaceTime} DistanceTwoPoints={DistanceTwoPoints} CaptainLiveLoaction={CaptainLiveLoaction}  />
-=======
         <div
           ref={RidePopUpRef}
           className="pointer-events-auto absolute inset-x-0 bottom-0 z-30 translate-y-full md:flex md:justify-center"
@@ -257,7 +173,6 @@ useGSAP(()=>{
             DistanceTwoPoints={DistanceTwoPoints}
             CaptainLiveLoaction={CaptainLiveLoaction}
           />
->>>>>>> fixedBranch
         </div>
         <div
           ref={ConfirmPopUpRef}

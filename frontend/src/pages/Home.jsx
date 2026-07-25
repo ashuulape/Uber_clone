@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-import React, { useContext, useEffect, useState } from 'react'
-import axios from 'axios'
-=======
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import image from "../assets/map.png";
->>>>>>> fixedBranch
 import { useGSAP } from "@gsap/react/dist";
 import gsap from "gsap";
 import { useRef } from "react";
@@ -59,13 +54,9 @@ const home = () => {
     setLoading,
     confirmRideSelection,
     fetchAndDrawRoute,
-<<<<<<< HEAD
-  } = useRideContext()
-=======
     routeData,
     setRouteData,
   } = useRideContext();
->>>>>>> fixedBranch
 
   useEffect(() => {
     if (socket && user) {
@@ -107,26 +98,10 @@ const home = () => {
     };
   }, [socket, setLookingPanel, setWaitingForDriverPanel, setRideInfo]);
 
-<<<<<<< HEAD
-
-  useEffect(() => {
-  socket.on('ride-started', ride => {
-    setWaitingForDriverPanel(false)
-    navigate('/riding')
-  })
-
-  return () => {
-    socket.off('ride-started')
-  }
-}, [socket])
-
-
-=======
   socket.on("ride-started", (ride) => {
     setWaitingForDriverPanel(false);
     navigate("/riding");
   });
->>>>>>> fixedBranch
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -138,11 +113,7 @@ const home = () => {
         setCurrentLocation(nextLocation);
       },
       (err) => {
-<<<<<<< HEAD
-       console.log(err)
-=======
         alert("Error getting location: " + err.message);
->>>>>>> fixedBranch
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
     );
@@ -192,19 +163,6 @@ const home = () => {
         const address =
           props.formatted || props.address_line1 || props.name || "";
 
-<<<<<<< HEAD
-    setSuggestions(normalized)
-  } catch (error) {
-    setSuggestions([])
-  } finally {
-    setIsFetchingSuggestions(false)
-  }
-}
-const debouncedFetchSuggestions = (value, field) => {
-  if (debounceTimerRef.current) {
-    clearTimeout(debounceTimerRef.current)
-  }
-=======
         return {
           id:
             props.place_id ||
@@ -218,7 +176,6 @@ const debouncedFetchSuggestions = (value, field) => {
           lon: props.lon ?? item.lon,
         };
       });
->>>>>>> fixedBranch
 
       setSuggestions(normalized);
     } catch (error) {
@@ -240,56 +197,6 @@ const debouncedFetchSuggestions = (value, field) => {
   const handleSuggestionSelect = (location) => {
     const value = location.address || location.name;
 
-<<<<<<< HEAD
-  setSuggestions([])
-  
-}
-const Findtrip = async() => {
-  
-  const token = localStorage.getItem('token')
-  
-  if (!socket || !user?._id) return
-  
-  
-  
-  
-  if(pickup && destination){
-    setLoading(true)
-    
-    setPanelopen(false)
-  }
-  try {
-    
-    const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/ride/getfare`, {
-      params: {
-        origin: pickup,
-        destination: destination
-      },
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    setFare(response.data)
-    
-    
-  } catch {
-    // fare fetch failed, panel stays hidden
-  } finally {
-    setLoading(false) // stop spinner, whether success or fail
-  }
-  
-  
-  if(pickup && destination){
-    setVehiclePanel(true) 
-    setPanelopen(false)
-  }
-  
-}
-const DefaultLocation = async () => {
-  const token = localStorage.getItem('token')
-  if(!token) {
-    alert('Please login to use this feature')
-    return
-  }
-=======
     if (activeField === "destination") {
       setDestination(value);
     } else {
@@ -355,7 +262,6 @@ const DefaultLocation = async () => {
   };
   const Draw = async (origin, destination) => {
     const data = await fetchAndDrawRoute(origin, destination);
->>>>>>> fixedBranch
 
     setDrawedata(data);
   };
@@ -462,53 +368,11 @@ const DefaultLocation = async () => {
         <Map LiveLocation={userLiveLocation} routeData={Routedata} />
       </div>
 
-<<<<<<< HEAD
-
-      <div className="pointer-events-none items-center absolute inset-0 z-10 flex flex-col justify-end pt-4 rounded-2xl ">
-        <div
-       
-        className="h-fit md:w-1/2 w-full bg-black flex flex-col justify-start  rounded-t-3xl pointer-events-auto ">
-           
- 
-            <i onClick={()=>{setPanelopen((prev)=>!prev)}} ref={arrow} className="ri-arrow-up-s-line text-white text-center text-3xl p-2"></i>
-
-          <h2  className="text-white text-3xl text-center  font-semibold m-2">Find a trip</h2>
-         
-         <form  onSubmit={(e)=>{submitHandler(e)}} className="h-fit flex flex-col px-4 gap-4 items-center w-full  text-white font-medium relative pb-8">
-           <div className='h-fit w-full flex flex-row px-4 gap-2  text-white font-medium relative ' >
-
-            <div className=" flex w-[5%] items-center justify-center">
-           <div className="bg-white/60 relative justify-center  top-0 left-0 w-1 h-[80%] rounded-full flex">
-              <div className=" bg-white w-3 h-3 rounded-full top-0 absolute"></div>
-              <div className="w-3 h-3 bg-white rotate-180 [clip-path:polygon(50%_0%,_0%_100%,_100%_100%)] bottom-0 absolute"></div>
-
-           </div>
-           </div>
-            <div className="flex flex-col gap-4 w-full">
-              <input
-              onClick={()=>{setPanelopen(true); DefaultLocation()}}
-              value={pickup}
-              onChange={(e) => {
-                setPickup(e.target.value)
-                debouncedFetchSuggestions(e.target.value, 'pickup')
-              }}
-              className="text-lg bg-white/10 border-[0.5px] border-white/15  py-2 rounded-lg px-4 border-0 w-full "
-              type="text"
-              placeholder="Enter your pickup location"
-            />
-            <input
-            onClick={()=>setPanelopen(true)}
-            value={destination}
-            onChange={(e) => {
-              setDestination(e.target.value)
-              debouncedFetchSuggestions(e.target.value, 'destination')
-=======
       <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-end pt-4 rounded-2xl ">
         <div className="h-fit md:w-1/2 w-full bg-black flex flex-col justify-start  rounded-t-3xl pointer-events-auto ">
           <i
             onClick={() => {
               setPanelopen((prev) => !prev);
->>>>>>> fixedBranch
             }}
             ref={arrow}
             className="ri-arrow-up-s-line text-white text-center text-3xl p-2"
@@ -563,10 +427,7 @@ const DefaultLocation = async () => {
               onClick={() => {
                 Findtrip();
                 Draw(pickup, destination);
-<<<<<<< HEAD
-=======
                 fetchAndDrawRoute(pickup, destination);
->>>>>>> fixedBranch
               }}
               disabled={loading}
               className="bg-white text-black w-[80%] text-lg px-4 py-2 rounded flex items-center justify-center"
@@ -575,14 +436,6 @@ const DefaultLocation = async () => {
             </button>
           </form>
         </div>
-<<<<<<< HEAD
-        <div ref={panelRef} className="bg-black h-0 md:w-1/2 w-full relative flex justify-center overflow-y-hidden pointer-events-auto ">
-            <LocationSearchPanel
-              suggestions={suggestions}
-              isLoading={isFetchingSuggestions}
-              onSelectSuggestion={handleSuggestionSelect}
-            />
-=======
         <div
           ref={panelRef}
           className="bg-black h-0 relative md:w-1/2  overflow-y-hidden pointer-events-auto "
@@ -592,7 +445,6 @@ const DefaultLocation = async () => {
             isLoading={isFetchingSuggestions}
             onSelectSuggestion={handleSuggestionSelect}
           />
->>>>>>> fixedBranch
         </div>
       </div>
       <div
