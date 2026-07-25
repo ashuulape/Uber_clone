@@ -1,34 +1,34 @@
-import React, { useState } from 'react';
-import autoImage from '../assets/auto.png'
-import bikeImage from '../assets/bike.png'
-import carImage from '../assets/car.png'
-import 'remixicon/fonts/remixicon.css';
-import { useRideContext } from '../Context/RideContext';
+import React, { useState } from "react";
+import autoImage from "../assets/auto.png";
+import bikeImage from "../assets/bike.png";
+import carImage from "../assets/car.png";
+import "remixicon/fonts/remixicon.css";
+import { useRideContext } from "../Context/RideContext";
 
 const VEHICLE_CONFIG = [
   {
-    key: 'auto',
-    name: 'Auto',
+    key: "auto",
+    name: "Auto",
     seats: 3,
-    description: 'Pay directly to driver, cash/UPI only',
+    description: "Pay directly to driver, cash/UPI only",
     image: autoImage,
-    icon: 'ri-motorbike-line',
+    icon: "ri-motorbike-line",
   },
   {
-    key: 'bike',
-    name: 'Bike',
+    key: "bike",
+    name: "Bike",
     seats: 1,
-    description: 'Quick & affordable two-wheeler rides',
+    description: "Quick & affordable two-wheeler rides",
     image: bikeImage,
-    icon: 'ri-bike-line',
+    icon: "ri-bike-line",
   },
   {
-    key: 'car',
-    name: 'UberGo',
+    key: "car",
+    name: "UberGo",
     seats: 4,
-    description: 'Affordable compact rides',
-    image:carImage,
-    icon: 'ri-car-line',
+    description: "Affordable compact rides",
+    image: carImage,
+    icon: "ri-car-line",
   },
 ];
 
@@ -46,14 +46,16 @@ const Cabs = () => {
   const distance = fare.distance ?? null;
 
   return (
-    <div className="bg-black text-white px-4 font-sans h-full w-full flex flex-col items-center rounded-t-3xl">
+    <div className="bg-black text-white px-4 font-sans h-full w-full  flex flex-col items-center rounded-t-3xl">
       {/* Drag handle */}
       <div
         onClick={() => setVehiclePanel(false)}
         className="w-[40%] h-2 bg-white/50 rounded-full m-5 cursor-pointer"
       />
 
-      <h1 className="text-start w-full text-2xl font-semibold mb-2">Choose a Vehicle</h1>
+      <h1 className="text-start w-full text-2xl font-semibold mb-2">
+        Choose a Vehicle
+      </h1>
 
       {distance !== null && (
         <p className="text-start w-full text-sm text-gray-400 mb-4">
@@ -87,26 +89,35 @@ const Cabs = () => {
                 setVehiclePanel(false);
               }}
               className={`flex items-center justify-between p-3 rounded-2xl cursor-pointer transition-all duration-200
-                ${isSelected
-                  ? 'bg-white/15 outline outline-1 outline-white'
-                  : 'hover:bg-white/10 active:bg-white/15'
+                ${
+                  isSelected
+                    ? "bg-white/15 outline outline-1 outline-white"
+                    : "hover:bg-white/10 active:bg-white/15"
                 }`}
             >
               {/* Icon */}
               <div className="w-15 h-15 flex-shrink-0 flex items-center justify-center rounded-xl mr-3">
-               <img src={vehicle.image} alt={vehicle.name} className='h-full' />
+                <img
+                  src={vehicle.image}
+                  alt={vehicle.name}
+                  className="h-full"
+                />
               </div>
 
               {/* Info */}
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <h3 className="text-[18px] font-semibold leading-none">{vehicle.name}</h3>
+                  <h3 className="text-[18px] font-semibold leading-none">
+                    {vehicle.name}
+                  </h3>
                   <span className="flex items-center text-[13px] text-gray-300 gap-0.5">
                     <i className="ri-user-3-line text-[12px]" />
                     {vehicle.seats}
                   </span>
                 </div>
-                <p className="text-[13px] text-gray-400 mt-1 line-clamp-1">{vehicle.description}</p>
+                <p className="text-[13px] text-gray-400 mt-1 line-clamp-1">
+                  {vehicle.description}
+                </p>
               </div>
 
               {/* Price */}
