@@ -130,7 +130,7 @@ const home = () => {
         setCurrentLocation(nextLocation);
       },
       (err) => {
-        alert('Error getting location: ' + err.message);
+       console.log(err)
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
@@ -391,10 +391,10 @@ useGSAP(()=>{
       </div>
 
 
-      <div className="pointer-events-none absolute inset-0 z-10 flex flex-col justify-end pt-4 rounded-2xl ">
+      <div className="pointer-events-none items-center absolute inset-0 z-10 flex flex-col justify-end pt-4 rounded-2xl ">
         <div
        
-        className="h-fit  bg-black flex flex-col justify-start  rounded-t-3xl pointer-events-auto ">
+        className="h-fit md:w-1/2 w-full bg-black flex flex-col justify-start  rounded-t-3xl pointer-events-auto ">
            
  
             <i onClick={()=>{setPanelopen((prev)=>!prev)}} ref={arrow} className="ri-arrow-up-s-line text-white text-center text-3xl p-2"></i>
@@ -448,7 +448,7 @@ useGSAP(()=>{
             </button>
           </form>
         </div>
-        <div ref={panelRef} className="bg-black h-0 relative  overflow-y-hidden pointer-events-auto ">
+        <div ref={panelRef} className="bg-black h-0 md:w-1/2 w-full relative flex justify-center overflow-y-hidden pointer-events-auto ">
             <LocationSearchPanel
               suggestions={suggestions}
               isLoading={isFetchingSuggestions}

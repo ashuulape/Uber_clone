@@ -6,11 +6,11 @@ const LocationSearchPanel = ({ suggestions = [], isLoading = false, onSelectSugg
   const hasSuggestions = suggestions.length > 0
 
   return (
-    <div className="bg-black h-fit w-full overflow-y-auto px-5 py-3 flex flex-col gap-1 select-none">
+    <div className="bg-black h-fit w-full overflow-y-auto px-5 py-3 flex flex-col gap-1 select-none ">
       {isLoading ? (
-        <div className="px-2 py-4 text-sm text-zinc-400">Searching locations...</div>
+        <div className="px-2 py-4 text-sm text-zinc-400 text-center">Searching locations...</div>
       ) : !hasSuggestions ? (
-        <div className="px-2 py-4 text-sm text-zinc-400">Type a pickup or destination to see live suggestions.</div>
+        <div className="px-2 py-4 text-sm text-zinc-400 text-center">Type a pickup or destination to see live suggestions.</div>
       ) : (
         suggestions.map((loc) => (
           <div

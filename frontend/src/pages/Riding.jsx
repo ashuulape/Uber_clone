@@ -75,12 +75,12 @@ useEffect(() => {
           </Link>
 
           {/* Map Top Half */}
-          <div className='h-3/5 w-full overflow-hidden relative z-0'  >
+          <div className='h-full w-full overflow-hidden absolute z-0'  >
                 <Map LiveLocation={userLiveLocation} routeData={Drawdata} />
           </div>
 
           {/* Ride Details Bottom Half */}
-          <div className='h-2/5 bg-black px-4 py-6 text-white flex flex-col justify-between'>
+          <div className='h-2/6 w-full bg-black px-4 py-6 text-white flex flex-col items-end justify-end absolute bottom-0 z-1'>
             
             {/* Driver info & Vehicle image */}
             <div className="flex items-center justify-between w-full px-2">
@@ -95,7 +95,7 @@ useEffect(() => {
               </div>
             </div>
   
-            <div className="w-full flex flex-col gap-4 mt-6 px-2 flex-grow">
+            <div className="w-full flex flex-col gap-4 mt-6 px-2 ">
               
               {/* Destination */}
               <div className="flex items-center gap-4 border-b border-gray-700 pb-4">
@@ -116,7 +116,7 @@ useEffect(() => {
               </div>
             </div>
   
-            <button className="w-full bg-white text-black font-semibold text-lg py-3 rounded-xl active:bg-gray-200 mt-auto">
+            <button className="w-full bg-white text-black font-semibold text-lg py-3 rounded-xl active:bg-gray-200 mt-0">
               Make a Payment
             </button>
           </div>

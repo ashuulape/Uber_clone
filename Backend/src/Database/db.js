@@ -1,12 +1,12 @@
 const mongoose=require('mongoose')
 
-const connectDB = () => {
-    mongoose.connect(process.env.MONGO_URI + 'uber')
-        .then(() => console.log('MongoDB connected successfully'))
-        .catch((error) => {
-            console.error('MongoDB connection failed:', error.message);
-            process.exit(1);
-        });
+const connectDB=()=>{
+   try {
+      mongoose.connect(process.env.MONGO_URI+'/uber')
+      console.log('Mongodb connected sucessfully')
+   } catch (error) {
+      console.log('Mongodb connection failed',error)
+   }
 }
 
 module.exports=connectDB
