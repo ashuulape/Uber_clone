@@ -4,6 +4,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const ConfirmRidePopUP = (props) => {
+  const [info, setinfo] = useState(false);
   const [otp, setOtp] = useState("");
 
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ const ConfirmRidePopUP = (props) => {
       {/* Top indicator handle to close */}
       <div
         onClick={() => {
-          if (props.setConfirmShowRide) props.setConfirmShowRide(false);
+          setinfo((prev) => !prev);
         }}
         className="w-[15%] h-1.5 bg-gray-600 rounded-full mx-auto mb-4 mt-5 cursor-pointer"
       ></div>
@@ -71,37 +72,37 @@ const ConfirmRidePopUP = (props) => {
           </div>
         </div>
       </div>
+      {info && (
+        <div className="w-full flex flex-col gap-4 mt-6 px-2">
+          <div className="flex items-center gap-4 border-b border-gray-700 pb-4">
+            <i className="ri-map-pin-2-fill text-xl text-gray-300"></i>
+            <div>
+              <h3 className="text-lg font-medium">PickUp</h3>
+              <p className="text-sm text-gray-400">{props?.Ride?.origin}</p>
+            </div>
+          </div>
 
-      <div className="w-full flex flex-col gap-4 mt-6 px-2">
-        {/* Origin */}
-        <div className="flex items-center gap-4 border-b border-gray-700 pb-4">
-          <i className="ri-map-pin-2-fill text-xl text-gray-300"></i>
-          <div>
-            <h3 className="text-lg font-medium">PickUp</h3>
-            <p className="text-sm text-gray-400">{props?.Ride?.origin}</p>
+          {/* Destination */}
+          <div className="flex items-center gap-4 border-b border-gray-700 pb-4">
+            <i className="ri-map-pin-fill text-xl text-gray-300"></i>
+            <div>
+              <h3 className="text-lg font-medium">Destination</h3>
+              <p className="text-sm text-gray-400 line-clamp-2">
+                {props?.Ride?.destination}
+              </p>
+            </div>
+          </div>
+
+          {/* Fare Details */}
+          <div className="flex items-center gap-4 pb-2">
+            <i className="ri-currency-line text-xl text-gray-300"></i>
+            <div>
+              <h3 className="text-lg font-medium">₹ {props?.Ride?.fare}</h3>
+              <p className="text-sm text-gray-400">Cash</p>
+            </div>
           </div>
         </div>
-
-        {/* Destination */}
-        <div className="flex items-center gap-4 border-b border-gray-700 pb-4">
-          <i className="ri-map-pin-fill text-xl text-gray-300"></i>
-          <div>
-            <h3 className="text-lg font-medium">Destination</h3>
-            <p className="text-sm text-gray-400 line-clamp-2">
-              {props?.Ride?.destination}
-            </p>
-          </div>
-        </div>
-
-        {/* Fare Details */}
-        <div className="flex items-center gap-4 pb-2">
-          <i className="ri-currency-line text-xl text-gray-300"></i>
-          <div>
-            <h3 className="text-lg font-medium">₹ {props?.Ride?.fare}</h3>
-            <p className="text-sm text-gray-400">Cash</p>
-          </div>
-        </div>
-      </div>
+      )}
 
       {/* OTP Input and Button */}
       <div className="w-full mt-6">
@@ -113,20 +114,21 @@ const ConfirmRidePopUP = (props) => {
             onChange={(e) => setOtp(e.target.value)}
             className="w-full bg-gray-900 border border-gray-700 px-4 py-3 text-lg rounded-xl text-white outline-none focus:border-green-500 font-mono tracking-widest text-center"
           />
+          <div className="flex md:flex-row flex-col md:gap-10 gap-2">
+            <button className="w-full flex items-center justify-center bg-white text-black font-bold text-lg py-3 rounded-xl active:bg-white transition-colors">
+              Confirm
+            </button>
 
-          <button className="w-full flex items-center justify-center bg-white text-black font-bold text-lg py-3 rounded-xl active:bg-white transition-colors">
-            Confirm
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              if (props.setConfirmShowRide) props.setConfirmShowRide(false);
-            }}
-            className="w-full bg-white/20 text-red-500 font-semibold text-lg py-3 rounded-xl transition-colors"
-          >
-            Cancel
-          </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (props.setConfirmShowRide) props.setConfirmShowRide(false);
+              }}
+              className="w-full bg-white/20 text-red-500 font-semibold text-lg py-3 rounded-xl transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
         </form>
       </div>
     </div>

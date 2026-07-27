@@ -8,6 +8,9 @@ import { captainDataContext } from "../Context/CaptainContext";
 import Map from "../Components/Map";
 
 const FinishRidePanel = (props) => {
+  const { Ride } = useContext(captainDataContext);
+  const { origin, destination, user, distance, fare } = Ride || {};
+
   return (
     <div className="bg-black text-white px-4 font-sans w-full md:w-1/2 flex flex-col items-center rounded-t-3xl pb-8 shadow-[0_-10px_20px_rgba(0,0,0,0.5)]">
       <div
@@ -25,17 +28,19 @@ const FinishRidePanel = (props) => {
           <div className="w-14 h-14 bg-gray-800 rounded-full overflow-hidden border-[2px] border-white">
             <img
               className="h-full w-full object-cover"
-              src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=1760&auto=format&fit=crop"
+              src="https://coolpfps.com/wp-content/uploads/2025/08/deadpool-pfp-10.webp"
               alt="Rider"
             />
           </div>
           <div>
-            <h2 className="text-lg font-semibold">Ashutosh Singh</h2>
+            <h2 className="text-lg font-semibold">
+              {user?.fullname?.firstname} {user?.fullname?.lastname}
+            </h2>
             <h3 className="text-sm text-gray-400">Passenger</h3>
           </div>
         </div>
         <div className="text-right">
-          <h2 className="text-xl font-bold text-white">2.2 KM</h2>
+          <h2 className="text-xl font-bold text-white">{distance} KM</h2>
           <div className="mt-1 text-sm font-semibold flex items-center justify-end gap-1">
             <i className="ri-star-fill text-yellow-500"></i>
             <span className="text-white/50">4.9</span>
@@ -48,23 +53,21 @@ const FinishRidePanel = (props) => {
         <div className="flex items-center gap-4 border-b border-gray-700 pb-4">
           <i className="ri-map-pin-2-fill text-xl text-gray-300"></i>
           <div>
-            <h3 className="text-lg font-medium">562/11-A</h3>
-            <p className="text-sm text-gray-400">Kankariya Talab, Bhopal</p>
+            <h3 className="text-lg font-medium">{origin}</h3>
+            <p className="text-sm text-gray-400">From</p>
           </div>
         </div>
         <div className="flex items-center gap-4 border-b border-gray-700 pb-4">
           <i className="ri-map-pin-fill text-xl text-gray-300"></i>
           <div>
-            <h3 className="text-lg font-medium">Third Wave Coffee</h3>
-            <p className="text-sm text-gray-400 line-clamp-2">
-              17th Cross Rd, PWD Quarters, 1st Sector, HSR Layout, Bengaluru
-            </p>
+            <h3 className="text-lg font-medium">{destination}</h3>
+            <p className="text-sm text-gray-400 line-clamp-2">To</p>
           </div>
         </div>
         <div className="flex items-center gap-4 pb-2">
           <i className="ri-currency-line text-xl text-gray-300"></i>
           <div>
-            <h3 className="text-lg font-medium">₹193.20</h3>
+            <h3 className="text-lg font-medium">₹{fare}</h3>
             <p className="text-sm text-gray-400">Cash</p>
           </div>
         </div>

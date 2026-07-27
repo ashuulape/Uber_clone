@@ -64,7 +64,7 @@ const Cabs = () => {
         </p>
       )}
 
-      <div className="w-full max-w-md flex flex-col gap-2 pb-4">
+      <div className="w-full px-4 flex flex-col gap-2 pb-4">
         {VEHICLE_CONFIG.map((vehicle) => {
           const price = fare[vehicle.key];
           const isSelected = selected === vehicle.key;
@@ -88,7 +88,7 @@ const Cabs = () => {
                 setConfirmRidePanel(true);
                 setVehiclePanel(false);
               }}
-              className={`flex items-center justify-between p-3 rounded-2xl cursor-pointer transition-all duration-200
+              className={`flex items-center justify-between w-full p-3 rounded-2xl cursor-pointer transition-all duration-200
                 ${
                   isSelected
                     ? "bg-white/15 outline outline-1 outline-white"

@@ -59,7 +59,7 @@ const Riding = () => {
       </div>
 
       {/* Ride Details Bottom Half */}
-      <div className="h-2/5 md:w-1/2 w-full  bg-black px-4 py-6 relative bottom-0  text-white flex flex-col   justify-between rounded-t-2xl">
+      <div className="h-fit md:w-1/2 w-full  bg-black px-4 py-6 relative bottom-0  text-white flex flex-col   justify-between rounded-t-2xl">
         {/* Driver info & Vehicle image */}
         <div className="flex items-center justify-between w-full px-2">
           <div className="flex flex-col items-center relative h-20 w-32 justify-center">
@@ -83,7 +83,7 @@ const Riding = () => {
           </div>
         </div>
 
-        <div className="w-full flex flex-col gap-4 mt-6 px-2 flex-grow">
+        <div className="w-full flex h-fit flex-col gap-4 my-6  px-2 flex-grow">
           {/* Destination */}
           <div className="flex items-center gap-4 border-b border-gray-700 pb-4">
             <i className="ri-map-pin-fill text-xl text-gray-300"></i>

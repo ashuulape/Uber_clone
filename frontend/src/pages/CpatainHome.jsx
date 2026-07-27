@@ -130,10 +130,6 @@ const CpatainHome = () => {
     <div className="h-screen bg-black/40 overflow-hidden relative">
       {/* Top Navbar */}
       <div className="fixed p-4 top-0 flex items-center justify-between w-full z-10">
-        <div className="w-12 h-12 bg-black backdrop-blur-md flex items-center justify-center rounded-full border border-white/30 text-white shadow-lg active:scale-95 transition-transform">
-          <i className="ri-menu-line text-2xl font-bold"></i>
-        </div>
-
         <div className="flex flex-col items-start text-white">
           <p className="text-[10px] uppercase tracking-[0.3em] text-white/60">
             Driver
@@ -155,14 +151,14 @@ const CpatainHome = () => {
       </div>
 
       {/* Bottom Details Panel */}
-      <div className="absolute inset-x-0 bottom-0 z-20 pointer-events-none">
-        <div className="pointer-events-auto">
+      <div className="absolute inset-x-0 bottom-0 z-20 pointer-events-none flex justify-center  w-full">
+        <div className="pointer-events-auto md:w-1/2">
           <CaptainDetails />
         </div>
 
         <div
           ref={RidePopUpRef}
-          className="pointer-events-auto absolute inset-x-0 bottom-0 z-30 translate-y-full"
+          className="pointer-events-auto absolute inset-x-0 bottom-0 z-30 flex justify-center translate-y-full"
         >
           <RidePopUP
             Ride={Ride}
@@ -178,7 +174,7 @@ const CpatainHome = () => {
         </div>
         <div
           ref={ConfirmPopUpRef}
-          className="pointer-events-auto absolute inset-x-0 bottom-0 z-40 translate-y-full"
+          className="pointer-events-auto absolute inset-x-0 bottom-0 z-40 translate-y-full flex justify-center"
         >
           <ConfirmRidePopUP
             Ride={Ride}
