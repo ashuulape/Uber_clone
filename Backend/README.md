@@ -13,22 +13,22 @@ Backend/
 ├── .env                       # Environment variables (not committed)
 └── src/
     ├── app.js                 # Express app setup, middleware, route mounting
-    ├── socket.js              # Socket.IO initialization & event handlers
+    ├── socket.js              # Socket.IO initialisation & event handlers
     ├── Database/
     │   └── db.js              # MongoDB connection via Mongoose
     ├── models/
     │   ├── user.model.js      # User schema (passengers)
     │   ├── captain.model.js   # Captain schema (drivers + vehicle info)
     │   ├── ride.model.js      # Ride schema (full trip lifecycle)
-    │   └── blacklist.model.js # JWT token blacklist (logout invalidation)
+    │   └── blacklist.model.js # JWT token blacklist (logout invalidation, TTL 24h)
     ├── Controlers/
     │   ├── user.conroller.js  # User CRUD & auth logic
     │   ├── captain.controller.js  # Captain CRUD & auth logic
-    │   ├── map.controller.js  # Geocoding & map API calls
-    │   └── ride.controller.js # Ride lifecycle & driver dispatch
+    │   ├── map.controller.js  # Geocoding & map API proxy
+    │   └── ride.controller.js # Ride lifecycle & driver dispatch via Socket.IO
     ├── services/
-    │   ├── map.service.js     # Geoapify API integration
-    │   └── ride.service.js    # Fare calc, OTP, ride state transitions
+    │   ├── map.service.js     # Geoapify API integration (geocode, routing, autocomplete)
+    │   └── ride.service.js    # Fare calculation, OTP generation, ride state transitions
     ├── Routes/
     │   ├── auth.routes.js     # /api/auth/*
     │   ├── captain.routes.js  # /api/captain/*
@@ -47,9 +47,9 @@ Backend/
 | `express` | ^5.2.1 | Web framework |
 | `mongoose` | peer dep | MongoDB ODM |
 | `socket.io` | ^4.8.3 | Real-time WebSocket communication |
-| `bcrypt` | ^6.0.0 | Password hashing |
-| `jsonwebtoken` | ^9.0.3 | JWT auth tokens |
-| `express-validator` | ^7.3.2 | Request validation |
+| `bcrypt` | ^6.0.0 | Password hashing (salt rounds: 10) |
+| `jsonwebtoken` | ^9.0.3 | JWT auth tokens (1-day expiry) |
+| `express-validator` | ^7.3.2 | Request input validation |
 | `cookie-parser` | ^1.4.7 | Cookie parsing |
 | `cors` | ^2.8.6 | Cross-Origin Resource Sharing |
 | `dotenv` | ^17.4.2 | Environment variable loading |
@@ -72,7 +72,7 @@ GEOAPIFY_BASE_URL=https://api.geoapify.com
 GEOAPIFY_API_KEY=your_geoapify_api_key
 ```
 
-Get a free Geoapify API key at https://www.geoapify.com/
+Get a free Geoapify API key at https://www.geoapify.com/ (free tier: 3,000 requests/day)
 
 ---
 
@@ -96,7 +96,7 @@ npm install
 npm start
 ```
 
-The server starts on `http://localhost:3000` (or the next available port if 3000 is busy).
+The server starts on `http://localhost:3000` (or the next available port if 3000 is busy — see Auto Port Fallback).
 
 ---
 
@@ -126,11 +126,16 @@ Register a new user (passenger).
 }
 ```
 
+**Validation:**
+- `email` — valid email format
+- `fullname.firstname` — string, required
+- `fullname.lastname` — string, required
+
 **Response 200:**
 ```json
 {
   "message": "user created sucessfully",
-  "user": { "...user fields" },
+  "user": { "...user fields (no password)" },
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 }
 ```
@@ -160,7 +165,7 @@ Login an existing user.
 ---
 
 #### POST /api/auth/logout
-Logout user — adds token to blacklist. Auth Required via cookie or Bearer token.
+Logout user — adds token to the blacklist. Auth Required via cookie or `Authorization: Bearer <token>`.
 
 ---
 
@@ -194,7 +199,14 @@ Register a new captain (driver).
 }
 ```
 
-vehicleType must be one of: `car`, `auto`, `bike`
+`vehicleType` must be one of: `car`, `auto`, `bike`
+
+**Validation:**
+- `firstname` min 3 chars, `lastname` min 2 chars
+- `password` min 6 chars
+- `vehicle.color` and `vehicle.plate` min 3 chars
+- `vehicle.capacity` integer ≥ 1
+- `vehicle.vehicleType` enum: `car | auto | bike`
 
 **Response 200:**
 ```json
@@ -256,11 +268,24 @@ Convert an address string to lat/lon coordinates.
 ---
 
 #### GET /api/maps/get-distance-time
-Get driving distance and estimated time between two addresses. Returns GeoJSON route data.
+Get driving distance, estimated time, and GeoJSON route between two **addresses**. Returns Geoapify Routing API response.
 
 **Query Params:**
 - `origin` (string, required)
 - `destination` (string, required)
+
+**Used for:** Fare calculation, route drawing on map
+
+---
+
+#### GET /api/maps/get-distance-time/coords
+Same as above but accepts **coordinate strings** instead of addresses. Origin must be pre-resolved coordinates.
+
+**Query Params:**
+- `origin` (string — e.g. `"12.9716,77.5946"`)
+- `destination` (string — address or coordinate string)
+
+**Used for:** Captain's route from their live location to the pickup point
 
 ---
 
@@ -269,10 +294,12 @@ Autocomplete address suggestions (up to 5 results).
 
 **Query Params:** `address` (string, required) — partial address input
 
+**Response:** Geoapify autocomplete JSON (features array)
+
 ---
 
 #### GET /api/maps/current-location
-Reverse geocode lat/lon to a human-readable address. Does NOT require auth.
+Reverse geocode lat/lon to a human-readable address. **Does NOT require auth.**
 
 **Query Params:**
 - `lat` (float, required)
@@ -300,11 +327,14 @@ Create a new ride request (passenger side). Auth Required (user token).
 ```
 
 **Flow after creation:**
-1. Calculates fare using Geoapify routing API
-2. Generates a cryptographically secure 6-digit OTP
-3. Saves ride to MongoDB with status `pending`
-4. Finds all captains within 10 km radius using MongoDB `$geoWithin`
-5. Emits `new-ride` event via Socket.IO to all captains in radius
+1. Calculates fare using Geoapify Routing API
+2. Generates a cryptographically secure 6-digit OTP via `crypto.randomInt`
+3. Saves ride to MongoDB with `status: pending`
+4. Geocodes origin to coordinates
+5. Finds all captains within **10 km radius** using MongoDB `$geoWithin` / `$centerSphere`
+6. Emits `new-ride` Socket.IO event to every captain in radius (OTP field cleared from payload)
+
+**Response 201:** Created ride object
 
 ---
 
@@ -327,12 +357,12 @@ Get fare estimates for all vehicle types. Auth Required (user token).
 
 **Fare Calculation Formula:**
 ```
-Fare = Base + (distanceKm x perKm) + (durationMin x perMin)
+Fare = Base + (distanceKm × perKm) + (durationMin × perMin)
 
 Rates:
-  auto  -> base: Rs 50,  perKm: Rs 15, perMin: Rs 2
-  bike  -> base: Rs 20,  perKm: Rs 8,  perMin: Rs 1
-  car   -> base: Rs 80,  perKm: Rs 20, perMin: Rs 3
+  auto  → base: ₹50,  perKm: ₹15, perMin: ₹2
+  bike  → base: ₹20,  perKm: ₹8,  perMin: ₹1
+  car   → base: ₹80,  perKm: ₹20, perMin: ₹3
 ```
 
 ---
@@ -345,7 +375,9 @@ Captain accepts a ride request. Auth Required (captain token).
 { "rideId": "64f3a..." }
 ```
 
-Updates ride status to `accepted`, emits `ride-confirmed` to the user via Socket.IO.
+- Updates ride `status` → `accepted`
+- Assigns `captain` field to the requesting captain
+- Emits `ride-confirmed` to the passenger's socket (captain password stripped from payload)
 
 ---
 
@@ -356,7 +388,9 @@ Start the ride after OTP verification. Auth Required (captain token).
 - `rideId` (MongoDB ObjectId)
 - `OTP` (6-digit string)
 
-Validates OTP, updates status to `ongoing`, emits `ride-started` to user.
+- Validates OTP against stored (hidden) value
+- Updates `status` → `ongoing`
+- Emits `ride-started` to passenger
 
 ---
 
@@ -368,7 +402,9 @@ End the active ride. Auth Required (captain token).
 { "rideId": "64f3a..." }
 ```
 
-Updates status to `completed`, emits `ride-ended` to user.
+- Validates ride belongs to requesting captain and is `ongoing`
+- Updates `status` → `completed`
+- Emits `ride-ended` to passenger
 
 ---
 
@@ -380,10 +416,10 @@ Updates status to `completed`, emits `ride-ended` to user.
 | `fullname.firstname` | String | Required, 3–20 chars |
 | `fullname.lastname` | String | Required, 2–30 chars |
 | `email` | String | Required, unique |
-| `password` | String | Bcrypt hashed, hidden from queries by default |
-| `socketId` | String | Updated on each Socket.IO connection |
-| `location.lat` | Number | Live GPS latitude |
-| `location.lng` | Number | Live GPS longitude |
+| `password` | String | Bcrypt hashed, `select: false` |
+| `socketId` | String | Updated on each Socket.IO `join` event |
+| `location.lat` | Number | Live GPS latitude (updated every 10s) |
+| `location.lng` | Number | Live GPS longitude (updated every 10s) |
 
 **Methods:**
 - `generateJWT()` — signs a 1-day JWT token
@@ -400,13 +436,18 @@ Updates status to `completed`, emits `ride-ended` to user.
 | `email` | String | Required, unique |
 | `password` | String | Bcrypt hashed |
 | `status` | Enum | `active` or `inactive` (default: `inactive`) |
-| `vehicle.color` | String | Required, 3-20 chars |
-| `vehicle.plate` | String | Required, 3-20 chars |
+| `vehicle.color` | String | Required, 3–20 chars |
+| `vehicle.plate` | String | Required, 3–20 chars |
 | `vehicle.capacity` | Number | Min: 1 |
 | `vehicle.vehicleType` | Enum | `car`, `auto`, or `bike` |
-| `socketId` | String | Live socket connection ID |
+| `socketId` | String | Live socket connection ID (default: `""`) |
 | `location.lat` | Number | Live GPS latitude |
 | `location.lng` | Number | Live GPS longitude |
+
+**Methods:**
+- `generateAuthToken()` — signs a 1-day JWT token
+- `ComparePassword(pw)` — bcrypt comparison
+- `hashpassword(pw)` (static) — bcrypt hash with salt 10
 
 ---
 
@@ -418,21 +459,22 @@ Updates status to `completed`, emits `ride-ended` to user.
 | `origin` | String | Pickup location address |
 | `destination` | String | Drop-off location address |
 | `vehicleType` | Enum | `auto`, `bike`, or `car` |
-| `fare` | Number | Calculated fare in rupees |
+| `fare` | Number | Calculated fare in rupees (default: 0) |
 | `status` | Enum | `pending` → `accepted` → `ongoing` → `completed` / `cancelled` |
-| `distance` | Number | Trip distance in km |
-| `duration` | Number | Estimated duration in minutes |
-| `OTP` | String | 6-digit code (hidden from queries by default) |
+| `distance` | Number | Trip distance in km (default: 0) |
+| `duration` | Number | Estimated duration in minutes (default: 0) |
+| `OTP` | String | 6-digit code, `select: false` — hidden from default queries |
 | `paymentId` | String | Payment gateway reference |
 | `orderId` | String | Order reference |
 | `signature` | String | Payment signature |
+| `createdAt` / `updatedAt` | Date | Auto-managed timestamps |
 
 ---
 
 ### Blacklist Model
 | Field | Type | Notes |
 |-------|------|-------|
-| `token` | String | JWT token to invalidate (unique) |
+| `token` | String | JWT token to invalidate (unique index) |
 | `createdAt` | Date | Auto-expires after **24 hours** via MongoDB TTL index |
 
 ---
@@ -443,18 +485,18 @@ Updates status to `completed`, emits `ride-ended` to user.
 
 | Event | Payload | Description |
 |-------|---------|-------------|
-| `join` | `{ userId, userType: 'user' or 'captain' }` | Registers socket ID in DB |
-| `update-location-captain` | `{ userId, location: { lat, lng } }` | Updates captain GPS in DB |
-| `update-location-user` | `{ userId, location: { lat, lng } }` | Updates user GPS in DB |
+| `join` | `{ userId, userType: 'user' \| 'captain' }` | Writes socket ID to user/captain document in DB |
+| `update-location-captain` | `{ userId, location: { lat, lng } }` | Updates captain GPS coordinates in DB |
+| `update-location-user` | `{ userId, location: { lat, lng } }` | Updates user GPS coordinates in DB |
 
 ### Server → Client
 
 | Event | Payload | Description |
 |-------|---------|-------------|
-| `new-ride` | Full ride object (user populated) | Sent to captains within 10 km radius |
-| `ride-confirmed` | Ride object with captain info | Sent to user when captain accepts |
-| `ride-started` | Ride object | Sent to user when captain starts ride |
-| `ride-ended` | Ride object | Sent to user when captain finishes ride |
+| `new-ride` | Full ride object (user populated, OTP cleared) | Sent to all captains within 10 km radius |
+| `ride-confirmed` | Ride object with captain info (password stripped) | Sent to passenger when captain accepts |
+| `ride-started` | Ride object | Sent to passenger when captain starts ride |
+| `ride-ended` | Ride object | Sent to passenger when captain finishes ride |
 
 ---
 
@@ -464,9 +506,9 @@ Updates status to `completed`, emits `ride-ended` to user.
 2. **Client sends token** via `Authorization: Bearer <token>` header or `token` cookie
 3. **Middleware** (`auth.middleware.js`) checks:
    - Token is not in the **blacklist** (revoked/logged-out tokens)
-   - Token is a valid JWT (verifies with `JWT_SECRET`)
+   - Token is a valid JWT (verified with `JWT_SECRET`)
    - Attaches `req.user` or `req.captain` for downstream handlers
-4. **Logout** — Token added to blacklist, expires after 24 hours via MongoDB TTL
+4. **Logout** — Token added to blacklist, auto-expires after 24 hours via MongoDB TTL index
 
 ---
 
@@ -478,9 +520,9 @@ All geocoding and routing is powered by [Geoapify](https://www.geoapify.com/):
 | API Endpoint | Usage |
 |---|---|
 | `/v1/geocode/search` | Address → coordinates (forward geocoding) |
-| `/v1/geocode/autocomplete` | Location autocomplete suggestions |
+| `/v1/geocode/autocomplete` | Location autocomplete suggestions (limit 5) |
 | `/v1/geocode/reverse` | Coordinates → address (reverse geocoding) |
-| `/v1/routing` | Distance and driving time between two points |
+| `/v1/routing` | Driving distance, time, and GeoJSON route between two waypoints |
 
 ---
 
@@ -490,11 +532,14 @@ All routes use `express-validator` middleware chains before controllers:
 
 - Email format validation
 - Password minimum length: 6 characters
-- Name length constraints (firstname: 3+ chars, lastname: 2+ chars)
-- Vehicle type must be one of `car`, `auto`, `bike`
-- MongoDB ObjectId format for ride IDs
-- Coordinate type checks (float) for map queries
-- OTP must be exactly 6 characters
+- First name: string, required; Captain: min 3 chars
+- Last name: string, required; Captain: min 2 chars
+- `vehicleType` must be one of `car`, `auto`, `bike`
+- `vehicle.color` and `vehicle.plate`: min 3 chars
+- `vehicle.capacity`: integer ≥ 1
+- MongoDB ObjectId format for `rideId`
+- Coordinate type checks (float) for lat/lon map queries
+- OTP must be exactly 6 characters (string)
 
 ---
 
@@ -514,3 +559,5 @@ If the configured port is already in use, the server automatically increments an
 Port 3000 is busy, trying 3001...
 Server is running on port 3001
 ```
+
+This is implemented in `server.js` by listening for the `EADDRINUSE` error and recursively calling `startServer(port + 1)`.
