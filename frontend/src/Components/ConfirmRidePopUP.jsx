@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 const ConfirmRidePopUP = (props) => {
   const [otp, setOtp] = useState("");
-  console.log(props?.Ride?._id);
+
   const navigate = useNavigate();
 
   const submitHandler = async (e) => {

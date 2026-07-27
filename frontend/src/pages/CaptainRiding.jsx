@@ -86,15 +86,14 @@ const CaptainRiding = () => {
 
   const navigate = useNavigate();
 
-  const [Routedata, setDrawedata] = useState(null);
-
-  const { origin, destination } = Ride;
-
   useEffect(() => {
-    if (Ride === undefined) {
+    if (!Ride) {
       navigate("/captainhome");
     }
   }, [Ride]);
+  const [Routedata, setDrawedata] = useState(null);
+
+  const { origin, destination } = Ride || {};
 
   const Draw = async (origin, destination) => {
     const data = await fetchAndDrawRoute(origin, destination);

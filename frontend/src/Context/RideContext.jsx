@@ -85,6 +85,38 @@ const RideProvider = ({ children }) => {
     }
   };
 
+  const fetchAndDrawRouteBycoords = async (origin, destination) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.warn("No auth token found for route request");
+      setRouteData(null);
+      return null;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/maps/get-distance-time/coords`,
+        {
+          params: { origin, destination },
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      const nextRouteData = response?.data ?? null;
+
+      // setRouteData(nextRouteData)
+      return nextRouteData;
+    } catch (error) {
+      console.error("Error fetching route GeoJSON:", error);
+      setRouteData(null);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <RideContext.Provider
       value={{
@@ -118,6 +150,7 @@ const RideProvider = ({ children }) => {
         setLoading,
         confirmRideSelection,
         fetchAndDrawRoute,
+        fetchAndDrawRouteBycoords,
       }}
     >
       {children}

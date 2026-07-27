@@ -14,6 +14,12 @@ const Riding = () => {
   const navigate = useNavigate();
   const { rideInfo, fetchAndDrawRoute } = useRideContext();
 
+  useEffect(() => {
+    if (rideInfo == null) {
+      navigate("/home");
+    }
+  }, [rideInfo]);
+
   const [Routedata, setDrawedata] = useState(null);
 
   const { userLiveLocation } = useContext(userDataContext);
@@ -29,13 +35,7 @@ const Riding = () => {
     }
   };
 
-  useEffect(() => {
-    if (rideInfo == undefined) {
-      navigate("/home");
-    }
-  }, []);
-
-  const { origin, destination } = rideInfo || null;
+  const { origin, destination } = rideInfo || {};
   const Draw = async (origin, destination) => {
     const data = await fetchAndDrawRoute(origin, destination);
 

@@ -86,6 +86,7 @@ const home = () => {
     if (!socket) return;
 
     const handleRideConfirmed = (ride) => {
+      console.log("ride", ride);
       setLookingPanel(false);
       setWaitingForDriverPanel(true);
       setRideInfo(ride);
@@ -98,26 +99,16 @@ const home = () => {
     };
   }, [socket, setLookingPanel, setWaitingForDriverPanel, setRideInfo]);
 
-  socket.on("ride-started", (ride) => {
-    setWaitingForDriverPanel(false);
-    navigate("/riding");
-  });
-
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const nextLocation = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
-        setCurrentLocation(nextLocation);
-      },
-      (err) => {
-        alert("Error getting location: " + err.message);
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
-    );
-  }, []);
+    socket.on("ride-started", (ride) => {
+      setWaitingForDriverPanel(false);
+      navigate("/riding");
+    });
+
+    return () => {
+      socket.off("ride-started"); // <-- is this missing?
+    };
+  }, [socket]);
 
   const debounceTimerRef = useRef(null);
   const panelRef = useRef(null);
@@ -207,6 +198,7 @@ const home = () => {
   };
   const Findtrip = async () => {
     const token = localStorage.getItem("token");
+    console.log(socket);
 
     if (!socket || !user?._id) {
       console.warn("Socket is not ready yet");
@@ -248,12 +240,14 @@ const home = () => {
       return;
     }
 
+    console.log(userLiveLocation);
+
     const response = await axios.get(
       `${import.meta.env.VITE_BASE_URL}/api/maps/current-location`,
       {
         params: {
-          lat: currentLocation.lat,
-          lon: currentLocation.lng,
+          lat: userLiveLocation.lat,
+          lon: userLiveLocation.lng,
         },
         headers: { Authorization: `Bearer ${token}` },
       },
@@ -357,7 +351,7 @@ const home = () => {
   }, [waitingForDriverPanel]);
 
   return (
-    <div className="relative h-screen w-screen overflow-hidden bg-[#343134] md:flex md:justify-center">
+    <div className="relative h-screen w-screen overflow-hidden bg-[#343134] flex items-center justify-center">
       <img
         className="absolute  w-30 z-1 left-0"
         src="https://media.ffycdn.net/us/postmates/eyJwYXRoIjoicG9zdG1hdGVzXC9hY2NvdW50c1wvODRcLzQwMDA1MTRcL3Byb2plY3RzXC8zMFwvYXNzZXRzXC84NFwvNTY0OFwvZDgwNzhiNTY5MDgxZGMwMDg2YTA5MzMxODRmNzRjYWYtMTYyMDcxOTg2Ni5wbmcifQ:postmates:8yzkJLajxr6_SqXPeLDmCnbN5hR-5WgmEC3pzohGaAA?width={width}&rect=2.5259622713415,0,797.47403772866,487&reference_width=800"
@@ -368,8 +362,8 @@ const home = () => {
         <Map LiveLocation={userLiveLocation} routeData={Routedata} />
       </div>
 
-      <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-end pt-4 rounded-2xl ">
-        <div className="h-fit md:w-1/2 w-full bg-black flex flex-col justify-start  rounded-t-3xl pointer-events-auto ">
+      <div className="pointer-events-none absolute inset-0 z-10 flex flex-col justify-end pt-4 rounded-2xl items-center  ">
+        <div className="h-fit  bg-black flex flex-col justify-start  rounded-t-3xl pointer-events-auto md:w-1/2 ">
           <i
             onClick={() => {
               setPanelopen((prev) => !prev);
@@ -438,7 +432,7 @@ const home = () => {
         </div>
         <div
           ref={panelRef}
-          className="bg-black h-0 relative md:w-1/2  overflow-y-hidden pointer-events-auto "
+          className="bg-black h-0 relative  overflow-y-hidden pointer-events-auto "
         >
           <LocationSearchPanel
             suggestions={suggestions}
@@ -449,25 +443,25 @@ const home = () => {
       </div>
       <div
         ref={vehiclePanelRef}
-        className="h-fit rounded-2xl translate-y-full bg-black absolute  bottom-0 w-full md:w-1/2 z-20"
+        className="h-fit rounded-2xl translate-y-full bg-black absolute  bottom-0 w-full z-20"
       >
         <Cabs />
       </div>
       <div
         ref={ConfirmRide}
-        className="h-fit rounded-2xl translate-y-full bg-black absolute  bottom-0 w-full md:w-1/2 z-30"
+        className="h-fit rounded-2xl translate-y-full bg-black absolute  bottom-0 w-full z-30"
       >
         <Confirmedride />
       </div>
       <div
         ref={LookingRideRef}
-        className="h-fit rounded-2xl translate-y-full bg-black absolute  bottom-0 w-full md:w-1/2 z-30"
+        className="h-fit rounded-2xl translate-y-full bg-black absolute  bottom-0 w-full z-30"
       >
         <LookingForDriver />
       </div>
       <div
         ref={WaitingForDriverRef}
-        className="h-fit rounded-2xl translate-y-full bg-black absolute  bottom-0 w-full md:w-1/2 z-30"
+        className="h-fit rounded-2xl translate-y-full bg-black absolute  bottom-0 w-full z-30"
       >
         <WaitForDriver />
       </div>

@@ -47,6 +47,45 @@ const getAddressCoordinate = async (address) => {
 
 
 
+const getDistanceTimeByCoords = async (origin, destination) => {
+    if (!origin || !destination) {
+        throw new Error('origin & distance is required');
+    }
+
+
+   
+    let destinationLonLat
+let destinationCoords
+  if(typeof destination=='string'){
+        
+       destinationCoords=await getAddressCoordinate(destination)
+        destinationLonLat=`${destinationCoords[0].lat},${destinationCoords[0].lon }`
+  }
+  else{
+    destinationLonLat=destination
+  }
+
+originLonLat=origin
+
+  
+   
+
+        // https://api.geoapify.com/v1/routing?waypoints=16.6014579,74.5097272|16.6959348,74.4555755&mode=drive&apiKey=YOUR_API_KEY
+
+        const response = await axios.get(`${url}/v1/routing`, {
+        params: {
+            waypoints:`${originLonLat}|${destinationLonLat}`,
+            mode:'drive',
+            apiKey:goeApikey
+           
+        }
+    });
+
+    return response.data
+
+
+
+}
 const getDistanceTime = async (origin, destination) => {
     if (!origin || !destination) {
         throw new Error('origin & distance is required');
@@ -142,4 +181,4 @@ const getCaptainsInTheRadius=async (lat,lng ,radius) => {
     return captains
 }
 
-module.exports = { getAddressCoordinate, getDistanceTime, Suggestion, CurrentLocation, getCaptainsInTheRadius };
+module.exports = { getAddressCoordinate, getDistanceTime, Suggestion, CurrentLocation, getCaptainsInTheRadius,getDistanceTimeByCoords };

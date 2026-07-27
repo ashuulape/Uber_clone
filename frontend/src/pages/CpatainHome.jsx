@@ -22,6 +22,7 @@ const CpatainHome = () => {
   const { socket } = useSocketContext();
   const [showRide, setShowRide] = useState(false);
   const [confirmShowRide, setConfirmShowRide] = useState(false);
+  const [Drawdata, setDrawdata] = useState({});
   const RidePopUpRef = useRef(null);
   const ConfirmPopUpRef = useRef(null);
 
@@ -150,21 +151,22 @@ const CpatainHome = () => {
 
       {/* Map Background */}
       <div className="h-full w-full overflow-hidden absolute top-0 left-0 z-0">
-        <Map LiveLocation={CaptainLiveLoaction} />
+        <Map LiveLocation={CaptainLiveLoaction} routeData={Drawdata} />
       </div>
 
       {/* Bottom Details Panel */}
-      <div className="absolute inset-x-0 bottom-0 z-20 pointer-events-none md:flex justify-center ">
-        <div className="pointer-events-auto md:w-1/2">
+      <div className="absolute inset-x-0 bottom-0 z-20 pointer-events-none">
+        <div className="pointer-events-auto">
           <CaptainDetails />
         </div>
 
         <div
           ref={RidePopUpRef}
-          className="pointer-events-auto absolute inset-x-0 bottom-0 z-30 translate-y-full md:flex md:justify-center"
+          className="pointer-events-auto absolute inset-x-0 bottom-0 z-30 translate-y-full"
         >
           <RidePopUP
             Ride={Ride}
+            setDrawdata={setDrawdata}
             setShowRide={setShowRide}
             setConfirmShowRide={setConfirmShowRide}
             ConfirmRide={ConfirmRide}
@@ -176,7 +178,7 @@ const CpatainHome = () => {
         </div>
         <div
           ref={ConfirmPopUpRef}
-          className="pointer-events-auto absolute inset-x-0 bottom-0 z-40 translate-y-full md:flex md:justify-center"
+          className="pointer-events-auto absolute inset-x-0 bottom-0 z-40 translate-y-full"
         >
           <ConfirmRidePopUP
             Ride={Ride}

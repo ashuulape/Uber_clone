@@ -18,6 +18,8 @@ router.get('/get-coordinates',validateGetCoordinates,authmiddleware.authUsers,ma
 
 router.get('/get-distance-time',validateGetDistanceTime,authmiddleware.authUsers,mapController.getDistanceTime)
 
+router.get('/get-distance-time/coords',authmiddleware.authUsers,mapController.getDistanceTimeByCoords)
+
 router.get('/get-suggestion',validateGetCoordinates,authmiddleware.authUsers,mapController.getSuggestion)
 
 router.get('/current-location',validatecurrentLocation,mapController.getCurrentLocation)

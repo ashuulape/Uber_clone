@@ -47,6 +47,30 @@ const getDistanceTime=async (req,res,next) => {
     }
 
 }
+const getDistanceTimeByCoords=async (req,res,next) => {
+     const errors=validationResult(req);
+    if(!errors.isEmpty()){
+        return res.status(400).json({errors:errors.array()})
+    }
+    
+    const {origin,destination}=req.query
+
+
+    
+
+    try {
+          const data=await mapservice.getDistanceTimeByCoords(origin,destination)
+
+          res.status(200).json(data)
+
+        
+    } catch (error) {
+        res.status(500).json({message:"internal server error"})
+    }
+
+}
+
+
 
 const getSuggestion=async (req,res,next) => {
       const errors=validationResult(req);
@@ -88,4 +112,4 @@ const getCurrentLocation=async (req,res,next) => {
     }
 }
 
-module.exports={getCoordinates,getDistanceTime,getSuggestion,getCurrentLocation}
+module.exports={getCoordinates,getDistanceTime,getSuggestion,getCurrentLocation ,getDistanceTimeByCoords}

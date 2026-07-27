@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from "react";
 
 import axios from "axios";
+import { useRideContext } from "../Context/RideContext";
 
 const RidePopUP = (props) => {
   const { destination, origin, user, fare, distance } = props.Ride || {};
 
+  const { fetchAndDrawRoute } = useRideContext();
   const [CaptainCurrent, setCaptainCurrent] = useState({});
+
+  const Draw = async (origin, destination) => {
+    const data = await fetchAndDrawRoute(origin, destination);
+
+    props.setDrawdata(data);
+  };
 
   useEffect(() => {
     const fetchLocation = async () => {
@@ -28,7 +36,7 @@ const RidePopUP = (props) => {
   }, []);
 
   return (
-    <div className="bg-black text-white px-4 font-sans w-full md:w-1/2 flex flex-col items-center rounded-t-3xl pb-8 shadow-[0_-10px_20px_rgba(0,0,0,0.5)]">
+    <div className="bg-black text-white px-4 font-sans w-full flex flex-col items-center rounded-t-3xl pb-8 shadow-[0_-10px_20px_rgba(0,0,0,0.5)]">
       {/* Top indicator handle to close */}
       <div
         onClick={() => {
@@ -37,7 +45,7 @@ const RidePopUP = (props) => {
         className="w-[15%] h-1.5 bg-gray-600 rounded-full mx-auto mb-4 mt-5 cursor-pointer"
       ></div>
 
-      <h1 className="text-center text-2xl font-semibold w-full ">
+      <h1 className="text-start text-2xl font-semibold w-full">
         New Ride Available!
       </h1>
 
@@ -99,6 +107,7 @@ const RidePopUP = (props) => {
       <div className="flex flex-col w-full mt-8 gap-4">
         <button
           onClick={async () => {
+            await Draw(CaptainCurrent, origin);
             if (props.setConfirmShowRide) props.setConfirmShowRide(true);
             if (props.setShowRide) props.setShowRide(false);
             props.ConfirmRide();
