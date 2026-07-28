@@ -59,6 +59,17 @@ const home = () => {
   } = useRideContext();
 
   useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    const storedUser = sessionStorage.getItem("user");
+
+    if (token && storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
     if (socket && user) {
       socket.emit("join", { userType: "user", userId: user._id });
     }
@@ -348,6 +359,14 @@ const home = () => {
 
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-[#343134] flex items-center justify-center">
+      <button
+        className="absolute text-sm px-2 py-1 text-white bg-black rounded-lg font-bold top-5 right-5 z-10"
+        onClick={() => {
+          navigate("/user/logout");
+        }}
+      >
+        Logout
+      </button>
       <img
         className="absolute top-0  w-30 z-1 left-0"
         src="https://media.ffycdn.net/us/postmates/eyJwYXRoIjoicG9zdG1hdGVzXC9hY2NvdW50c1wvODRcLzQwMDA1MTRcL3Byb2plY3RzXC8zMFwvYXNzZXRzXC84NFwvNTY0OFwvZDgwNzhiNTY5MDgxZGMwMDg2YTA5MzMxODRmNzRjYWYtMTYyMDcxOTg2Ni5wbmcifQ:postmates:8yzkJLajxr6_SqXPeLDmCnbN5hR-5WgmEC3pzohGaAA?width={width}&rect=2.5259622713415,0,797.47403772866,487&reference_width=800"
