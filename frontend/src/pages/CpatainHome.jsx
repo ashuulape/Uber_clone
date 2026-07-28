@@ -54,7 +54,6 @@ const CpatainHome = () => {
   }, [socket, captain?._id]);
 
   socket.on("new-ride", (data) => {
-    console.log("New ride request:", data);
     setRide(data);
     setShowRide(true);
   });

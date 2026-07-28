@@ -86,7 +86,6 @@ const home = () => {
     if (!socket) return;
 
     const handleRideConfirmed = (ride) => {
-      console.log("ride", ride);
       setLookingPanel(false);
       setWaitingForDriverPanel(true);
       setRideInfo(ride);
@@ -198,7 +197,6 @@ const home = () => {
   };
   const Findtrip = async () => {
     const token = localStorage.getItem("token");
-    console.log(socket);
 
     if (!socket || !user?._id) {
       console.warn("Socket is not ready yet");
@@ -239,8 +237,6 @@ const home = () => {
       alert("Please login to use this feature");
       return;
     }
-
-    console.log(userLiveLocation);
 
     const response = await axios.get(
       `${import.meta.env.VITE_BASE_URL}/api/maps/current-location`,
