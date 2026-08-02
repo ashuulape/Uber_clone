@@ -377,7 +377,7 @@ const home = () => {
         <Map LiveLocation={userLiveLocation} routeData={Routedata} />
       </div>
 
-      <div className="pointer-events-none absolute inset-0 z-10 flex flex-col justify-end pt-4 rounded-2xl items-center  ">
+      <div className="pointer-events-none absolute inset-0 z-10 flex flex-col justify-end pt-4 rounded-2xl items-center w-full  ">
         <div className="h-fit  bg-black flex flex-col justify-start  rounded-t-3xl pointer-events-auto md:w-1/2 w-full ">
           <i
             onClick={() => {
