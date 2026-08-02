@@ -151,7 +151,7 @@ const CpatainHome = () => {
 
       {/* Bottom Details Panel */}
       <div className="absolute inset-x-0 bottom-0 z-20 pointer-events-none flex justify-center  w-full">
-        <div className="pointer-events-auto md:w-1/2">
+        <div className="pointer-events-auto md:w-1/2 w-full">
           <CaptainDetails />
         </div>
 
