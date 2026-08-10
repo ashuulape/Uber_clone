@@ -13,7 +13,7 @@ app.use(cookieParser());
 
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://your-frontend-domain.onrender.com', // your actual deployed frontend URL
+  'https://myuber69.onrender.com', // your actual deployed frontend URL
 ];
 
 app.use(cors({
