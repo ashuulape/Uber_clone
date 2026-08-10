@@ -101,16 +101,17 @@ const getUserprofile= async (req,res,next)=>{
 
 const logoutUser=async(req,res,next)=>{
     try {
-        const token=req.cookies.token
-        await BlacklistModel.create({
-            token:token
-
-        })
-        
-        res.clearCookie('token')
-        res.status(200).json({message:'User logged out successfully'})
+        const token = req.cookies?.token || req.headers.authorization?.split(' ')[1];
+        if (token) {
+            const isTokenBlacklisted = await BlacklistModel.findOne({ token });
+            if (!isTokenBlacklisted) {
+                await BlacklistModel.create({ token });
+            }
+        }
+        res.clearCookie('token');
+        res.status(200).json({message:'User logged out successfully'});
     } catch (error) {
-        res.status(500).json({message:error.message})
+        res.status(500).json({message:error.message});
     }
 }
 

@@ -1,33 +1,50 @@
 import axios from "axios";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import userdata, { userDataContext } from "../Context/UserContext";
+import { userDataContext } from "../Context/UserContext";
 
-const Userlogout = async () => {
-  const { setUser } = useContext(userDataContext);
+const Userlogout = () => {
+  const { setuser } = useContext(userDataContext);
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
-  try {
-    await axios.post(
-      `${import.meta.env.VITE_BASE_URL}/api/auth/logout`,
-      {}, // empty body — backend doesn't need one, it reads the cookie
-      {
-        withCredentials: true, // REQUIRED — sends the httpOnly cookie so req.cookies.token works
-      },
-    );
+  useEffect(() => {
+    axios
+      .post(
+        `${import.meta.env.VITE_BASE_URL}/api/auth/logout`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      )
+      .then((response) => {
+        if (response.status === 200) {
+          localStorage.removeItem("token");
+          sessionStorage.removeItem("user");
+          setuser(null);
+          navigate("/login");
+        }
+      })
+      .catch((error) => {
+        console.error(
+          "Logout error:",
+          error.response?.data?.message || error.message
+        );
+        localStorage.removeItem("token");
+        sessionStorage.removeItem("user");
+        setuser(null);
+        navigate("/login");
+      });
+  }, []);
 
-    // clear frontend state too
-    setUser(null);
-    localStorage.removeItem("user"); // or sessionStorage, whichever you're using
-    navigate("/login"); // or wherever you want to redirect
-  } catch (error) {
-    console.error(
-      "Logout failed:",
-      error.response?.data?.message || error.message,
-    );
-  }
-  return <div></div>;
+  return (
+    <div className="flex items-center justify-center h-screen font-semibold text-lg">
+      Logging out...
+    </div>
+  );
 };
 
 export default Userlogout;
