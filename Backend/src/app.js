@@ -17,7 +17,7 @@ const allowedOrigins = [
 ];
 
 app.use(cors({
-  origin:"https://myuber69.onrender.com/",
+  origin:"https://myuber69.onrender.com",
   credentials: true,
 }));
 
