@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   MapContainer,
   TileLayer,
@@ -23,31 +29,27 @@ const destinationIcon = L.icon({
   iconSize: [30, 30],
   iconAnchor: [10, 30],
   popupAnchor: [0, -40],
-  className: "invert",
+  // className: "invert",
 });
 
 // ─── Pure helpers ────────────────────────────────────────────────────────────
 
+const isNum = (n) => typeof n === "number" && Number.isFinite(n);
+
 const collectRoutePoints = (value) => {
   if (!Array.isArray(value)) return [];
   if (value.length === 0) return [];
-  if (typeof value[0] === "number" && typeof value[1] === "number") {
-    return Number.isFinite(value[0]) && Number.isFinite(value[1])
-      ? [value]
-      : [];
-  }
+  if (isNum(value[0]) && isNum(value[1])) return [value];
   return value.flatMap(collectRoutePoints);
 };
 
 const sanitizeCoordinates = (coords) => {
   if (!Array.isArray(coords)) return null;
   if (coords.length === 0) return [];
-  if (typeof coords[0] === "number" && typeof coords[1] === "number") {
-    return Number.isFinite(coords[0]) && Number.isFinite(coords[1])
-      ? [coords[0], coords[1]]
-      : null;
-  }
-  const sanitized = coords.map(sanitizeCoordinates).filter((item) => item !== null);
+  if (isNum(coords[0]) && isNum(coords[1])) return [coords[0], coords[1]];
+  const sanitized = coords
+    .map(sanitizeCoordinates)
+    .filter((item) => item !== null);
   return sanitized.length > 0 ? sanitized : null;
 };
 
@@ -73,16 +75,13 @@ const sanitizeRouteData = (data) => {
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
-/**
- * Pans / centers the map to liveLocation.
- * Only mounted when there is NO routeData so the map doesn't fight the route view.
- */
+/** Pans/centers the map to liveLocation. Only mounted when there's NO routeData. */
 const LiveUpdater = ({ liveLocation }) => {
   const map = useMap();
   const hasCentered = useRef(false);
 
   useEffect(() => {
-    if (!liveLocation?.lat || !liveLocation?.lng) return;
+    if (!isNum(liveLocation?.lat) || !isNum(liveLocation?.lng)) return;
     const target = [liveLocation.lat, liveLocation.lng];
 
     if (!hasCentered.current) {
@@ -96,33 +95,39 @@ const LiveUpdater = ({ liveLocation }) => {
   return null;
 };
 
-/**
- * A marker whose Leaflet instance is updated imperatively so GPS-tick
- * position changes are cheap and don't cause a full remount.
- */
+/** Fixes the classic "map renders blank/grey because container was 0px at mount" issue. */
+const SizeFixer = () => {
+  const map = useMap();
+  useEffect(() => {
+    // run once now, and once more after layout settles (fonts/images/flex can shift size)
+    map.invalidateSize();
+    const t = setTimeout(() => map.invalidateSize(), 250);
+    return () => clearTimeout(t);
+  }, [map]);
+  return null;
+};
+
 const LiveMarker = ({ lat, lng, icon }) => {
   const markerRef = useRef(null);
 
   useEffect(() => {
-    if (markerRef.current && lat != null && lng != null) {
+    if (markerRef.current && isNum(lat) && isNum(lng)) {
       markerRef.current.setLatLng([lat, lng]);
     }
   }, [lat, lng]);
 
-  if (lat == null || lng == null) return null;
+  if (!isNum(lat) || !isNum(lng)) return null;
 
   return <Marker position={[lat, lng]} icon={icon} ref={markerRef} />;
 };
 
-/**
- * Renders the GeoJSON route line + a destination icon at the last coordinate.
- * Calls onOriginResolved({ lat, lng }) with the first coordinate so the
- * parent can reposition the user icon to the actual route origin.
- *
- * GeoJSON uses [lng, lat] order; Leaflet needs [lat, lng].
- */
+const ROUTE_STYLE = { color: "#FF0000", weight: 4 };
+
 const RouteLayer = React.memo(({ routeData, onOriginResolved }) => {
-  const safeRouteData = useMemo(() => sanitizeRouteData(routeData), [routeData]);
+  const safeRouteData = useMemo(
+    () => sanitizeRouteData(routeData),
+    [routeData],
+  );
 
   const routeCoordinates = useMemo(
     () =>
@@ -134,17 +139,33 @@ const RouteLayer = React.memo(({ routeData, onOriginResolved }) => {
     [safeRouteData],
   );
 
-  // GeoJSON coords are [lng, lat] → index 0 = lng, index 1 = lat
-  const originPoint      = routeCoordinates.length > 0 ? routeCoordinates[0] : null;
-  const destinationPoint = routeCoordinates.length > 0 ? routeCoordinates[routeCoordinates.length - 1] : null;
+  const originPoint = routeCoordinates.length > 0 ? routeCoordinates[0] : null;
+  const destinationPoint =
+    routeCoordinates.length > 0
+      ? routeCoordinates[routeCoordinates.length - 1]
+      : null;
 
-  // Bubble the resolved origin up to the Map component
   useEffect(() => {
     if (!onOriginResolved) return;
     onOriginResolved(
       originPoint ? { lat: originPoint[1], lng: originPoint[0] } : null,
     );
   }, [originPoint, onOriginResolved]);
+
+  // Skip the imperative sync on the very first mount — <GeoJSON data={...}>
+  // already rendered it once via props. Only needed for *updates*, since
+  // react-leaflet's <GeoJSON> ignores prop changes after mount.
+  const geoJsonRef = useRef(null);
+  const isFirstRun = useRef(true);
+  useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+      return;
+    }
+    if (!geoJsonRef.current) return;
+    geoJsonRef.current.clearLayers();
+    if (safeRouteData) geoJsonRef.current.addData(safeRouteData);
+  }, [safeRouteData]);
 
   if (!safeRouteData || routeCoordinates.length === 0) return null;
 
@@ -156,38 +177,44 @@ const RouteLayer = React.memo(({ routeData, onOriginResolved }) => {
           icon={destinationIcon}
         />
       )}
-      <GeoJSON data={safeRouteData} style={{ color: "#D1FF00", weight: 4 }} />
+      <GeoJSON ref={geoJsonRef} data={safeRouteData} style={ROUTE_STYLE} />
     </>
   );
 });
 
 // ─── Main Map component ───────────────────────────────────────────────────────
 
-const tileUrl = `https://maps.geoapify.com/v1/tile/dark-matter-brown/{z}/{x}/{y}.png?apiKey=${import.meta.env.VITE_GEOAPIFY_API}`;
+const GEOAPIFY_KEY = import.meta.env.VITE_GEOAPIFY_API;
+if (!GEOAPIFY_KEY) {
+  // eslint-disable-next-line no-console
+  console.warn(
+    "[Map] VITE_GEOAPIFY_API is missing — tiles will fail to load. Check your .env file and restart the Vite dev server.",
+  );
+}
+// const tileUrl = `https://maps.geoapify.com/v1/tile/dark-matter-brown/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_KEY}`;
+const tileUrl = `https://tile.openstreetmap.org/{z}/{x}/{y}.png`;
 
 const Map = (props) => {
-  // GPS live location (always available once geolocation resolves)
   const liveLat = props?.LiveLocation?.lat;
   const liveLng = props?.LiveLocation?.lng;
+  const hasLiveLocation = isNum(liveLat) && isNum(liveLng);
 
   const hasRoute = !!props?.routeData;
 
-  // When a route is active, RouteLayer resolves the first coordinate and
-  // passes it back here so we can move the user icon to the route origin.
   const [routeOrigin, setRouteOrigin] = useState(null);
   const handleOriginResolved = useCallback((origin) => {
     setRouteOrigin(origin);
   }, []);
 
-  /**
-   * User icon position logic:
-   *   • routeData present  → use route's first coordinate (origin of the trip)
-   *   • no routeData       → use live GPS location
-   */
   const userLat = hasRoute && routeOrigin ? routeOrigin.lat : liveLat;
   const userLng = hasRoute && routeOrigin ? routeOrigin.lng : liveLng;
 
-  if (!liveLat || !liveLng) {
+  const initialCenter = useRef(null);
+  if (initialCenter.current === null && hasLiveLocation) {
+    initialCenter.current = [liveLat, liveLng];
+  }
+
+  if (!hasLiveLocation) {
     return (
       <div className="h-full w-full flex items-center justify-center">
         <h1 className="text-center text-black/50 font-bold">Loading map...</h1>
@@ -196,33 +223,30 @@ const Map = (props) => {
   }
 
   return (
-    <div className="h-full w-full pointer-events-auto absolute z-0">
+    <div className="h-full w-full min-h-[300px] pointer-events-auto absolute inset-0 z-0">
       <MapContainer
-        center={[liveLat, liveLng]}
+        center={initialCenter.current}
         zoom={12}
         className="h-full w-full"
         style={{ height: "100%", width: "100%" }}
         zoomControl={false}
         scrollWheelZoom={true}
       >
-        {/*
-          Only auto-pan to the GPS position when there is no route.
-          When a route is drawn the user can freely pan/zoom the map.
-        */}
+        <SizeFixer />
+
         {!hasRoute && <LiveUpdater liveLocation={props.LiveLocation} />}
 
         <TileLayer
           url={tileUrl}
+          attribution='&copy; <a href="https://www.geoapify.com/">Geoapify</a> | &copy; OpenStreetMap contributors'
           maxZoom={15}
           updateWhenIdle={true}
           updateWhenZooming={false}
           keepBuffer={2}
         />
 
-        {/* User icon — route origin when route exists, live GPS otherwise */}
         <LiveMarker lat={userLat} lng={userLng} icon={userIcon} />
 
-        {/* Route line + destination icon; also resolves origin coords back up */}
         <RouteLayer
           routeData={props?.routeData}
           onOriginResolved={handleOriginResolved}
@@ -232,4 +256,4 @@ const Map = (props) => {
   );
 };
 
-export default Map;
+export default React.memo(Map);
