@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import image from "../assets/map.png";
+
 import car from "../assets/car.png";
 import auto from "../assets/auto.png";
 import bike from "../assets/bike.png";

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import image from "../assets/map.png";
+
 import { useGSAP } from "@gsap/react/dist";
 import gsap from "gsap";
 import { useRef } from "react";

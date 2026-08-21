@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import image from "../assets/map.png";
+
 import { useGSAP } from "@gsap/react/dist";
 import gsap from "gsap";
 import { useRideContext } from "../Context/RideContext";
