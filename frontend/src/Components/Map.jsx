@@ -16,6 +16,7 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import userIconURL from "../assets/mask.png";
 import destinationIconURL from "../assets/destinations.png";
+import { Sun, Moon } from "lucide-react";
 
 const userIcon = L.icon({
   iconUrl: userIconURL,
@@ -29,7 +30,7 @@ const destinationIcon = L.icon({
   iconSize: [30, 30],
   iconAnchor: [10, 30],
   popupAnchor: [0, -40],
-  // className: "invert",
+  className: `invert`,
 });
 
 // ─── Pure helpers ────────────────────────────────────────────────────────────
@@ -121,7 +122,7 @@ const LiveMarker = ({ lat, lng, icon }) => {
   return <Marker position={[lat, lng]} icon={icon} ref={markerRef} />;
 };
 
-const ROUTE_STYLE = { color: "#FF0000", weight: 4 };
+const ROUTE_STYLE = { color: "#B8FBFF", weight: 4 };
 
 const RouteLayer = React.memo(({ routeData, onOriginResolved }) => {
   const safeRouteData = useMemo(
@@ -192,9 +193,12 @@ if (!GEOAPIFY_KEY) {
   );
 }
 // const tileUrl = `https://maps.geoapify.com/v1/tile/dark-matter-brown/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_KEY}`;
-const tileUrl = `https://tile.openstreetmap.org/{z}/{x}/{y}.png`;
 
 const Map = (props) => {
+  const [theame, settheame] = useState(true);
+  const tileUrl = theame
+    ? `https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png`
+    : `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png`;
   const liveLat = props?.LiveLocation?.lat;
   const liveLng = props?.LiveLocation?.lng;
   const hasLiveLocation = isNum(liveLat) && isNum(liveLng);
@@ -223,10 +227,21 @@ const Map = (props) => {
   }
 
   return (
-    <div className=" h-[80dvh] md:h-full w-full min-h-[300px] pointer-events-auto absolute inset-0 z-0">
+    <div className=" flex justify-center  h-[80dvh] md:h-full w-full min-h-[300px] pointer-events-auto absolute inset-0 z-0">
+      <button
+        onClick={() => settheame((prev) => !prev)}
+        className={`fixed z-999 top-5 flex items-center gap-2 px-2 md:px-3 py-1 md:py-2 rounded-2xl border-1 font-bold transition-colors duration-300 pointer-events-auto ${
+          theame
+            ? "bg-black text-white border-white"
+            : "bg-white text-black border-black"
+        }`}
+      >
+        {theame ? <Sun size={18} /> : <Moon size={18} />}
+        {theame ? "Light" : "Dark"}
+      </button>
       <MapContainer
         center={initialCenter.current}
-        zoom={12}
+        zoom={15}
         className="h-full w-full"
         style={{ height: "100%", width: "100%" }}
         zoomControl={false}
@@ -238,8 +253,8 @@ const Map = (props) => {
 
         <TileLayer
           url={tileUrl}
-          attribution='&copy; <a href="">UberClone</a> | &copy; OpenStreetMap contributors'
-          maxZoom={15}
+          attribution='&copy; <a href="">UberClone</a> | '
+          maxZoom={20}
           updateWhenIdle={true}
           updateWhenZooming={false}
           keepBuffer={2}

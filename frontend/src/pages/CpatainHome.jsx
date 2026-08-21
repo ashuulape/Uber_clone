@@ -128,7 +128,7 @@ const CpatainHome = () => {
   return (
     <div className="h-screen bg-black/40 overflow-hidden relative">
       {/* Top Navbar */}
-      <div className="fixed p-4 top-0 flex items-center justify-between w-full z-10">
+      <div className="fixed p-4 top-0 pointer-events-none flex items-center justify-between w-full z-10">
         <div className="flex flex-col items-start text-white">
           <p className="text-[10px] uppercase tracking-[0.3em] text-white/60">
             Driver
@@ -138,14 +138,14 @@ const CpatainHome = () => {
 
         <Link
           to="/captain/logout"
-          className="w-12 h-12 bg-black backdrop-blur-md flex items-center justify-center rounded-full border border-white/30 text-white shadow-lg active:scale-95 transition-transform"
+          className="w-12 h-12 relative z-40 bg-black backdrop-blur-md flex items-center justify-center rounded-full border border-white/30 text-white shadow-lg active:scale-95 transition-transform pointer-events-auto"
         >
           <i className="ri-logout-box-r-line text-2xl font-bold"></i>
         </Link>
       </div>
 
       {/* Map Background */}
-      <div className="h-full w-full overflow-hidden absolute top-0 left-0 z-0">
+      <div className="h-full w-full overflow-hidden absolute top-0 left-0 z-0 pointer-events-auto">
         <Map LiveLocation={CaptainLiveLoaction} routeData={Drawdata} />
       </div>
 
