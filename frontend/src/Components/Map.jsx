@@ -223,7 +223,7 @@ const Map = (props) => {
   }
 
   return (
-    <div className="h-full w-full min-h-[300px] pointer-events-auto absolute inset-0 z-0">
+    <div className=" h-[80dvh] md:h-full w-full min-h-[300px] pointer-events-auto absolute inset-0 z-0">
       <MapContainer
         center={initialCenter.current}
         zoom={12}
@@ -238,7 +238,7 @@ const Map = (props) => {
 
         <TileLayer
           url={tileUrl}
-          attribution='&copy; <a href="https://www.geoapify.com/">Geoapify</a> | &copy; OpenStreetMap contributors'
+          attribution='&copy; <a href="">UberClone</a> | &copy; OpenStreetMap contributors'
           maxZoom={15}
           updateWhenIdle={true}
           updateWhenZooming={false}
