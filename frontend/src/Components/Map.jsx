@@ -197,8 +197,8 @@ if (!GEOAPIFY_KEY) {
 const Map = (props) => {
   const [theame, settheame] = useState(true);
   const tileUrl = theame
-    ? `https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png`
-    : `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png`;
+    ? `https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png&api_key=${import.meta.env.VITE_MAP_KEY}`
+    : `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png&api_key=${import.meta.env.VITE_MAP_KEY}`;
   const liveLat = props?.LiveLocation?.lat;
   const liveLng = props?.LiveLocation?.lng;
   const hasLiveLocation = isNum(liveLat) && isNum(liveLng);
