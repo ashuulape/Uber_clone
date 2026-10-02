@@ -185,20 +185,19 @@ const RouteLayer = React.memo(({ routeData, onOriginResolved }) => {
 
 // ─── Main Map component ───────────────────────────────────────────────────────
 
-const GEOAPIFY_KEY = import.meta.env.VITE_GEOAPIFY_API;
+const GEOAPIFY_KEY = import.meta.env.VITE_GEOAPIFY_KEY;
 if (!GEOAPIFY_KEY) {
   // eslint-disable-next-line no-console
   console.warn(
-    "[Map] VITE_GEOAPIFY_API is missing — tiles will fail to load. Check your .env file and restart the Vite dev server.",
+    "[Map] VITE_GEOAPIFY_KEY is missing — tiles will fail to load. Check your .env file and restart the Vite dev server.",
   );
 }
-// const tileUrl = `https://maps.geoapify.com/v1/tile/dark-matter-brown/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_KEY}`;
 
 const Map = (props) => {
   const [theame, settheame] = useState(true);
   const tileUrl = theame
-    ? `https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png&api_key=${import.meta.env.VITE_MAP_KEY}`
-    : `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png&api_key=${import.meta.env.VITE_MAP_KEY}`;
+    ? `https://maps.geoapify.com/v1/tile/dark-matter-brown/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_KEY}`
+    : `https://maps.geoapify.com/v1/tile/maptiler-3d/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_KEY}`;
   const liveLat = props?.LiveLocation?.lat;
   const liveLng = props?.LiveLocation?.lng;
   const hasLiveLocation = isNum(liveLat) && isNum(liveLng);
@@ -232,8 +231,8 @@ const Map = (props) => {
         onClick={() => settheame((prev) => !prev)}
         className={`fixed z-999 top-5 flex items-center gap-2 px-2 md:px-3 py-1 md:py-2 rounded-2xl border-1 font-bold transition-colors duration-300 pointer-events-auto ${
           theame
-            ? "bg-black text-white border-white"
-            : "bg-white text-black border-black"
+            ? " text-white border-white bg-transparent"
+            : " text-black border-black bg-transparent"
         }`}
       >
         {theame ? <Sun size={18} /> : <Moon size={18} />}
